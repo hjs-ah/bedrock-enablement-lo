@@ -7,7 +7,8 @@
     "Action mapping: begin with the on-the-job behavior and keep only the content that supports it.",
     "Scenario-based practice: three branching customer conversations with a strong, a partial, and a weak answer at each decision, and feedback that explains why.",
     "Stable framework, swappable reference: product details change quickly, so the seven criteria stay put and facts live in one content file with a verify-before-quoting note.",
-    "Accessible by default: keyboard operable, visible focus, color never the only signal, works at phone width, respects reduced motion."
+    "Learner control with guardrails: a contents list and a progress bar show where the learner is and let them return to any step they have unlocked. Continue stays locked until a step's activities are done, so the assessment cannot be skipped.",
+    "Accessible by default: keyboard operable, focus kept in place after each choice, screen reader announcements and labeled tabs and progress, color never the only signal, large touch targets, works at phone width, respects reduced motion."
   ],
   "scenes": [
     {
@@ -15,11 +16,11 @@
       "title": "Welcome",
       "kind": "Orientation, about 1 minute",
       "objective": "Set expectations and show what the learner will be able to do.",
-      "onScreen": "Title, a one-sentence promise, four performance objectives, and a note that Bedrock facts change and should be verified before quoting to customers.",
+      "onScreen": "Title, a one-sentence promise, an illustration of the central exchange (the customer asks where to start; the seller asks about their work), four performance objectives, a plain summary of how the module is scored, how to move around, and a note that Bedrock facts change and should be verified before quoting to customers.",
       "interaction": "None. Learners can resume where they left off or start over.",
       "feedback": "None.",
-      "assessment": "None.",
-      "rationale": "Objectives are written as behaviors the learner can do on a call, not topics they will see."
+      "assessment": "None. The scoring summary is here so learners know what counts before they make a single decision.",
+      "rationale": "Objectives are written as behaviors the learner can do on a call, not topics they will see. Saying up front how scoring works removes guesswork."
     },
     {
       "id": "warmup",

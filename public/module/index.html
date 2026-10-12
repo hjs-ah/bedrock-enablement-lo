@@ -29,19 +29,27 @@
     </div>
   </header>
 
-  <header class="top">
-    <div class="brand">Talking Bedrock with customers</div>
-    <div id="barWrap" class="track" role="progressbar" aria-label="Module progress" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><span id="bar"></span></div>
-    <div id="stepLabel" class="step" aria-live="polite"></div>
-  </header>
+  <section class="top" aria-label="Progress">
+    <div class="top-row">
+      <div class="brand">Talking Bedrock with customers</div>
+      <button type="button" id="tocBtn" class="toc-btn" aria-expanded="false" aria-controls="outline">Contents</button>
+    </div>
+    <div id="barWrap" class="track" role="progressbar" aria-label="Module progress" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"></div>
+    <div id="stepLabel" class="step"></div>
+  </section>
 
-  <main id="stage" tabindex="-1"></main>
+  <div class="shell">
+    <nav id="outline" class="outline" aria-label="Module contents" data-open="false"></nav>
+    <main id="stage" tabindex="-1"></main>
+  </div>
 
-  <footer class="nav">
+  <div id="announce" class="sr" role="status" aria-live="polite" aria-atomic="true"></div>
+
+  <nav class="nav" aria-label="Module navigation">
     <button id="prev" type="button" class="btn ghost">Back</button>
     <span id="mode" class="mode"></span>
     <button id="next" type="button" class="btn">Continue</button>
-  </footer>
+  </nav>
 
   <noscript><p class="wrap">This module needs JavaScript.</p></noscript>
   <script src="js/scorm.js"></script>

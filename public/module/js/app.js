@@ -11,7 +11,9 @@
   var stage = document.getElementById('stage');
   var nextBtn = document.getElementById('next');
   var prevBtn = document.getElementById('prev');
-  var bar = document.getElementById('bar');
+  var tocBtn = document.getElementById('tocBtn');
+  var outline = document.getElementById('outline');
+  var announce = document.getElementById('announce');
   var barWrap = document.getElementById('barWrap');
   var stepLabel = document.getElementById('stepLabel');
   var modeEl = document.getElementById('mode');
@@ -102,6 +104,40 @@
     return { cls: 'poor', label: 'Weak answer' };
   }
 
+  // Smallest number of points that reaches the pass mark, using the same rounding as percent().
+  function passPoints() {
+    var total = M.scenarioMax + M.quizMax;
+    for (var n = 0; n <= total; n += 1) {
+      if (Math.round((n / total) * 100) >= M.passMark) { return n; }
+    }
+    return total;
+  }
+
+  // Polite screen reader message for things that are not announced by moving focus.
+  function say(text) {
+    announce.textContent = '';
+    window.setTimeout(function () { announce.textContent = text; }, 40);
+  }
+
+  function scoreTag(scored, text) {
+    return '<p class="scoretag' + (scored ? ' scored' : '') + '">' + (scored ? 'Scored: ' + esc(text) : 'Practice: not scored') + '</p>';
+  }
+
+  var FIGURE = '' +
+    '<figure class="hero-fig">' +
+    '<svg viewBox="0 0 640 270" role="img" aria-labelledby="figT figD" focusable="false">' +
+    '<title id="figT">A customer asks where to start; the seller asks about the customer\'s own work</title>' +
+    '<desc id="figD">Two speech bubbles. The customer says: Where do we even start? The seller replies: Which process would change the most if it got faster or smarter? Below are the three adoption zones: back office, middle office, and customer-facing.</desc>' +
+    '<rect class="fig-bg" x="1" y="1" width="638" height="268" rx="14"/>' +
+    '<path class="fig-a" d="M42 26h262a14 14 0 0 1 14 14v46a14 14 0 0 1-14 14H78l-24 18v-18H42a14 14 0 0 1-14-14V40a14 14 0 0 1 14-14z"/>' +
+    '<text class="fig-ta" x="48" y="70" font-size="18">Where do we even start?</text>' +
+    '<path class="fig-b" d="M266 124h332a14 14 0 0 1 14 14v52a14 14 0 0 1-14 14h-22v18l-24-18H266a14 14 0 0 1-14-14v-52a14 14 0 0 1 14-14z"/>' +
+    '<text class="fig-tb" x="272" y="158" font-size="16">Which process would change the most</text>' +
+    '<text class="fig-tb" x="272" y="184" font-size="16">if it got faster or smarter?</text>' +
+    '<g class="fig-c"><rect x="24" y="226" width="190" height="32" rx="16"/><rect x="225" y="226" width="190" height="32" rx="16"/><rect x="426" y="226" width="190" height="32" rx="16"/></g>' +
+    '<g class="fig-tc" font-size="14" text-anchor="middle"><text x="119" y="247">Back office</text><text x="320" y="247">Middle office</text><text x="521" y="247">Customer-facing</text></g>' +
+    '</svg></figure>';
+
   function planOutput(p) {
     var out = [];
     if (p.priority === 'speed') {
@@ -126,8 +162,8 @@
 
   /* ---------- scene renderers ---------- */
 
-  function optionButton(attrs, text, cls) {
-    return '<button type="button" class="opt ' + (cls || '') + '" ' + attrs + '>' + esc(text) + '</button>';
+  function optionButton(attrs, text, cls, sr) {
+    return '<button type="button" class="opt ' + (cls || '') + '" ' + attrs + '>' + (sr ? '<span class="sr">' + esc(sr) + ' </span>' : '') + esc(text) + '</button>';
   }
 
   function feedback(score, why) {
@@ -136,27 +172,40 @@
   }
 
   function renderWelcome() {
+    var total = M.scenarioMax + M.quizMax;
     var resume = state.far > 0
       ? '<p class="resume">You have progress saved. <button type="button" class="link" data-act="restart">Start over</button></p>'
       : '';
+    var where = S.isLMS()
+      ? 'Your score and pass or fail status go to your learning system when you finish.'
+      : 'You are in browser mode: your progress saves on this device, and the site counts anonymous visits and clicks, never names.';
     return '' +
       '<h1>' + esc(M.title) + '</h1>' +
       '<p class="lede">A practice module for inside sales reps and sales leaders who need to talk about Amazon Bedrock with customers. About 25 minutes.</p>' +
+      FIGURE +
       '<h2>By the end you can</h2>' +
       '<ul class="plain">' + M.objectives.map(function (o) { return '<li>' + esc(o) + '</li>'; }).join('') + '</ul>' +
+      '<section class="scorebox" aria-labelledby="sc-h"><h2 id="sc-h">How you are scored</h2><ul class="plain">' +
+      '<li><strong>Three customer conversations: ' + M.scenarioMax + ' points.</strong> Each has two decisions. A strong answer earns 2 points, a partly right answer 1, and a weak answer 0.</li>' +
+      '<li><strong>Knowledge check: ' + M.quizMax + ' points.</strong> Five questions, 1 point each.</li>' +
+      '<li><strong>Everything else is practice.</strong> The warm-up, zone sorting, and planner are not scored.</li>' +
+      '<li><strong>Pass mark: ' + M.passMark + '%, which is ' + passPoints() + ' of ' + total + ' points.</strong> If you finish under it, you can retry the conversations and the quiz. Feedback explains every answer, and there is no timer.</li>' +
+      '</ul><p class="small">' + esc(where) + '</p></section>' +
+      '<section class="scorebox" aria-labelledby="mv-h"><h2 id="mv-h">Moving around</h2>' +
+      '<p>Use <strong>Continue</strong> and <strong>Back</strong>, or open <strong>Contents</strong> to jump to any step you have unlocked. Continue turns on when you finish the activities on a step. Everything works with a keyboard: Tab to move, Enter or Space to choose.</p></section>' +
       '<p class="callout">' + esc(M.disclaimer) + '</p>' + resume;
   }
 
   function renderWarmup() {
     var w = M.warmup;
     var chosen = state.warm;
-    var html = '<h1>' + TITLES.warmup + '</h1>' +
+    var html = '<h1>' + TITLES.warmup + '</h1>' + scoreTag(false) +
       '<p>' + esc(w.note) + '</p>' +
       '<blockquote class="customer">' + esc(w.customer) + '</blockquote>' +
       '<div class="opts">';
     w.options.forEach(function (o, idx) {
       var cls = chosen === null ? '' : (chosen === idx ? 'picked' : 'dim');
-      html += optionButton('data-act="warm" data-i="' + idx + '"' + (chosen !== null ? ' disabled' : ''), o.text, cls);
+      html += optionButton('data-act="warm" data-i="' + idx + '"' + (chosen !== null ? ' disabled' : ''), o.text, cls, chosen === idx ? 'Your choice:' : '');
     });
     html += '</div>';
     if (chosen !== null) {
@@ -167,16 +216,16 @@
   }
 
   function renderZones() {
-    var html = '<h1>' + TITLES.zones + '</h1>' +
+    var html = '<h1>' + TITLES.zones + '</h1>' + scoreTag(false) +
       '<p>When sellers asked where AI was actually being used, the answers fell into three zones. Name the zone and you know which question to ask next.</p>' +
       '<div class="tabs" role="tablist" aria-label="Adoption zones">';
     M.zones.forEach(function (z, idx) {
       var on = (state.tab || 0) === idx;
-      html += '<button type="button" role="tab" class="tab ' + (on ? 'on' : '') + '" aria-selected="' + on + '" data-act="tab" data-i="' + idx + '">' + esc(z.name) + '</button>';
+      html += '<button type="button" role="tab" id="tab-' + idx + '" aria-controls="zonepanel" tabindex="' + (on ? '0' : '-1') + '" class="tab ' + (on ? 'on' : '') + '" aria-selected="' + on + '" data-act="tab" data-i="' + idx + '">' + esc(z.name) + '</button>';
     });
     html += '</div>';
     var z = M.zones[state.tab || 0];
-    html += '<div class="panel" role="tabpanel">' +
+    html += '<div class="panel" id="zonepanel" role="tabpanel" aria-labelledby="tab-' + (state.tab || 0) + '">' +
       '<p><strong>Who:</strong> ' + esc(z.who) + '</p>' +
       '<p><strong>Examples</strong></p><ul class="plain">' + z.examples.map(function (e) { return '<li>' + esc(e) + '</li>'; }).join('') + '</ul>' +
       '<p><strong>Watch for:</strong> ' + esc(z.risk) + '</p>' +
@@ -189,7 +238,8 @@
       M.zones.forEach(function (z2) {
         var cls = '';
         if (a !== undefined) { cls = (a === z2.id ? (a === item.answer ? 'picked' : 'picked wrong') : 'dim'); }
-        html += optionButton('data-act="sort" data-id="' + item.id + '" data-z="' + z2.id + '"' + (a !== undefined ? ' disabled' : ''), z2.name, cls + ' small');
+        var srSort = a === z2.id ? (a === item.answer ? 'Your choice, correct:' : 'Your choice, not correct:') : '';
+        html += optionButton('data-act="sort" data-id="' + item.id + '" data-z="' + z2.id + '"' + (a !== undefined ? ' disabled' : ''), z2.name, cls + ' small', srSort);
       });
       html += '</div>';
       if (a !== undefined) {
@@ -201,7 +251,7 @@
   }
 
   function renderPlanner() {
-    var html = '<h1>' + TITLES.planner + '</h1>' +
+    var html = '<h1>' + TITLES.planner + '</h1>' + scoreTag(false) +
       '<p>Sellers don\'t pick the model. They frame the conversation so the right test gets run. Seven criteria cover almost every discussion.</p>' +
       '<div class="criteria">';
     M.criteria.forEach(function (c) {
@@ -226,12 +276,12 @@
   function renderScenario(idx) {
     var sc = M.scenarios[idx];
     var a = state.scen[sc.id] || {};
-    var html = '<h1>' + esc(sc.title) + '</h1><p class="setup">' + esc(sc.setup) + '</p>';
+    var html = '<h1>' + esc(sc.title) + '</h1>' + scoreTag(true, 'up to 4 points') + '<p class="setup">' + esc(sc.setup) + '</p>';
 
     html += '<h2>' + esc(sc.n1.prompt) + '</h2><div class="opts">';
     sc.n1.options.forEach(function (o, k) {
       var cls = a.n1 ? (a.n1.pick === k ? 'picked' : 'dim') : '';
-      html += optionButton('data-act="n1" data-s="' + idx + '" data-i="' + k + '"' + (a.n1 ? ' disabled' : ''), o.text, cls);
+      html += optionButton('data-act="n1" data-s="' + idx + '" data-i="' + k + '"' + (a.n1 ? ' disabled' : ''), o.text, cls, a.n1 && a.n1.pick === k ? 'Your choice:' : '');
     });
     html += '</div>';
 
@@ -240,7 +290,7 @@
       html += '<blockquote class="customer">' + esc(sc.n2.prompt) + '</blockquote><div class="opts">';
       sc.n2.options.forEach(function (o, k) {
         var cls = a.n2 ? (a.n2.pick === k ? 'picked' : 'dim') : '';
-        html += optionButton('data-act="n2" data-s="' + idx + '" data-i="' + k + '"' + (a.n2 ? ' disabled' : ''), o.text, cls);
+        html += optionButton('data-act="n2" data-s="' + idx + '" data-i="' + k + '"' + (a.n2 ? ' disabled' : ''), o.text, cls, a.n2 && a.n2.pick === k ? 'Your choice:' : '');
       });
       html += '</div>';
     }
@@ -253,7 +303,7 @@
   }
 
   function renderQuiz() {
-    var html = '<h1>' + TITLES.quiz + '</h1><p>Five questions. Each is worth one point.</p>';
+    var html = '<h1>' + TITLES.quiz + '</h1>' + scoreTag(true, '5 questions, 1 point each') + '<p>Choose one answer for each question.</p>';
     M.quiz.forEach(function (q, qi) {
       var a = state.quiz[qi];
       html += '<fieldset class="q"><legend>' + (qi + 1) + '. ' + esc(q.q) + '</legend><div class="opts">';
@@ -262,7 +312,11 @@
         if (a !== undefined) {
           if (o.correct) { cls = 'picked'; } else if (a === k) { cls = 'picked wrong'; } else { cls = 'dim'; }
         }
-        html += optionButton('data-act="quiz" data-q="' + qi + '" data-i="' + k + '"' + (a !== undefined ? ' disabled' : ''), o.text, cls);
+        var srQuiz = '';
+        if (a !== undefined) {
+          if (o.correct) { srQuiz = a === k ? 'Your choice, correct answer:' : 'Correct answer:'; } else if (a === k) { srQuiz = 'Your choice, incorrect:'; }
+        }
+        html += optionButton('data-act="quiz" data-q="' + qi + '" data-i="' + k + '"' + (a !== undefined ? ' disabled' : ''), o.text, cls, srQuiz);
       });
       html += '</div>';
       if (a !== undefined) {
@@ -334,25 +388,80 @@
     return true;
   }
 
+  // A step is open when every step before it is finished. Same rule as the Continue button,
+  // so the contents list can never skip an activity or reach the results early.
+  function unlocked(idx) {
+    for (var k = 0; k < idx; k += 1) {
+      if (!complete(SCENES[k])) { return false; }
+    }
+    return true;
+  }
+
+  function sceneScoreInfo(id) {
+    if (id.indexOf('scen') === 0) {
+      var a = state.scen[M.scenarios[Number(id.slice(4))].id] || {};
+      var got = (a.n1 ? a.n1.score : 0) + (a.n2 ? a.n2.score : 0);
+      if (a.n1 && a.n2) { return got + ' of 4 points'; }
+      return a.n1 ? got + ' points so far' : 'Scored, up to 4 points';
+    }
+    if (id === 'quiz') {
+      return Object.keys(state.quiz).length ? quizPoints() + ' of ' + M.quizMax + ' points' : 'Scored, up to ' + M.quizMax + ' points';
+    }
+    if (id === 'warmup' || id === 'zones' || id === 'planner') { return 'Practice, not scored'; }
+    return '';
+  }
+
+  function renderOutline() {
+    var html = '<h2 class="toc-h">Contents</h2><ol class="toc">';
+    SCENES.forEach(function (id, idx) {
+      var cur = idx === state.i;
+      var open = unlocked(idx);
+      var done = !cur && idx <= state.far && complete(id) && id !== 'results';
+      var status = cur ? 'current step' : (!open ? 'locked until earlier steps are finished' : (done ? 'completed' : 'available'));
+      var info = sceneScoreInfo(id);
+      html += '<li><button type="button" class="toc-item' + (cur ? ' cur' : '') + (done ? ' done' : '') + (open ? '' : ' locked') + '" data-go="' + idx + '"' +
+        (cur ? ' aria-current="step"' : '') + (open ? '' : ' aria-disabled="true"') + '>' +
+        '<span class="toc-n" aria-hidden="true">' + (done ? '\u2713' : (idx + 1)) + '</span>' +
+        '<span class="toc-t">' + esc(TITLES[id]) + (info ? '<small>' + esc(info) + '</small>' : '') +
+        '<span class="sr"> (' + status + ')</span></span></button></li>';
+    });
+    html += '</ol><p class="toc-total">Points so far: <strong>' + (scenarioPoints() + quizPoints()) + ' of ' + (M.scenarioMax + M.quizMax) + '</strong></p>';
+    outline.innerHTML = html;
+  }
+
+  function setToc(open) {
+    outline.setAttribute('data-open', String(open));
+    tocBtn.setAttribute('aria-expanded', String(open));
+  }
+
   function paint(focus) {
     var id = SCENES[state.i];
     stage.innerHTML = RENDER[id]();
     var pct = Math.round((state.i / (SCENES.length - 1)) * 100);
-    bar.style.width = pct + '%';
+    var label = 'Step ' + (state.i + 1) + ' of ' + SCENES.length + ': ' + TITLES[id];
+    barWrap.innerHTML = SCENES.map(function (_, k) {
+      return '<i class="seg' + (k < state.i ? ' done' : (k === state.i ? ' cur' : '')) + '"></i>';
+    }).join('');
     barWrap.setAttribute('aria-valuenow', String(pct));
-    stepLabel.textContent = 'Step ' + (state.i + 1) + ' of ' + SCENES.length + ': ' + TITLES[id];
+    barWrap.setAttribute('aria-valuetext', label);
+    stepLabel.textContent = label;
+    document.title = label + ' | ' + M.title;
+    renderOutline();
     prevBtn.disabled = state.i === 0;
     var last = state.i === SCENES.length - 1;
     nextBtn.hidden = last;
     nextBtn.disabled = !complete(id);
     if (focus) {
-      stage.focus({ preventScroll: true });
+      // Move focus to the new step's heading so screen readers announce where they landed.
+      var h = stage.querySelector('h1');
+      if (h) { h.setAttribute('tabindex', '-1'); h.focus({ preventScroll: true }); } else { stage.focus({ preventScroll: true }); }
       window.scrollTo(0, 0);
     }
   }
 
   function go(to) {
     if (to < 0 || to >= SCENES.length) { return; }
+    setToc(false);
     state.i = to;
     state.far = Math.max(state.far, to);
     paint(true);
@@ -413,6 +522,33 @@
     });
   }
 
+  /* ---------- focus after a choice ---------- */
+
+  // The step is redrawn after every choice, which would drop keyboard focus.
+  // Put it back on the same control, or on the feedback if the control is now locked.
+  function selectorFor(el) {
+    var sel = 'button';
+    Array.prototype.forEach.call(el.attributes, function (a) {
+      if (a.name.indexOf('data-') === 0) { sel += '[' + a.name + '="' + String(a.value).replace(/"/g, '\\"') + '"]'; }
+    });
+    return sel;
+  }
+
+  function afterAction(sel, act) {
+    var el = stage.querySelector(sel);
+    if (!el) { return; }
+    if (!el.disabled) { el.focus({ preventScroll: true }); }
+    else {
+      var box = el.closest('.opts, .row');
+      var fb = box && box.nextElementSibling;
+      if (fb && fb.classList.contains('fb')) {
+        fb.setAttribute('tabindex', '-1');
+        fb.focus({ preventScroll: true });
+      }
+    }
+    if (act === 'plan' && complete('planner')) { say('Your talk track is ready below the questions.'); }
+  }
+
   /* ---------- events ---------- */
 
   stage.addEventListener('click', function (ev) {
@@ -463,11 +599,48 @@
       window.print();
       return;
     }
+    var sel = selectorFor(t);
     refresh();
+    afterAction(sel, act);
+  });
+
+  // Zone tabs: arrow keys, Home and End, as users of tab widgets expect.
+  stage.addEventListener('keydown', function (ev) {
+    var t = ev.target.closest('[data-act="tab"]');
+    if (!t) { return; }
+    var n = M.zones.length;
+    var i = Number(t.getAttribute('data-i'));
+    var to = null;
+    if (ev.key === 'ArrowRight') { to = (i + 1) % n; }
+    else if (ev.key === 'ArrowLeft') { to = (i - 1 + n) % n; }
+    else if (ev.key === 'Home') { to = 0; }
+    else if (ev.key === 'End') { to = n - 1; }
+    if (to === null) { return; }
+    ev.preventDefault();
+    state.tab = to;
+    refresh();
+    var el = stage.querySelector('button[data-act="tab"][data-i="' + to + '"]');
+    if (el) { el.focus({ preventScroll: true }); }
   });
 
   nextBtn.addEventListener('click', function () { go(state.i + 1); });
   prevBtn.addEventListener('click', function () { go(state.i - 1); });
+
+  // Contents: sidebar on wide screens, a sheet above the buttons on narrow ones.
+  tocBtn.addEventListener('click', function () { setToc(outline.getAttribute('data-open') !== 'true'); });
+  outline.addEventListener('click', function (ev) {
+    var t = ev.target.closest('[data-go]');
+    if (!t) { return; }
+    var to = Number(t.getAttribute('data-go'));
+    if (!unlocked(to)) {
+      say('That step opens after you finish the steps before it.');
+      return;
+    }
+    if (to !== state.i) { track('contents_jump', { to: SCENES[to] }); go(to); } else { setToc(false); }
+  });
+  document.addEventListener('keydown', function (ev) {
+    if (ev.key === 'Escape' && outline.getAttribute('data-open') === 'true') { setToc(false); tocBtn.focus(); }
+  });
 
   window.addEventListener('beforeunload', function () { S.finish(!state.done); });
 

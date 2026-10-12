@@ -53,7 +53,7 @@ const html = `<!doctype html>
 </head>
 <body>
   <a class="skip" href="#main">Skip to content</a>
-  <div class="draft" role="note">Draft in progress. Values marked <span class="filler">like this</span> are placeholders and will be replaced before this case is shared.</div>
+  <aside class="draft" aria-label="Draft notice">Draft in progress. Values marked <span class="filler">like this</span> are placeholders and will be replaced before this case is shared.</aside>
   <header class="site-bar" id="siteBar">
     <div class="site-bar-in">
       <a class="site-brand" href="/"><span class="site-brand-name">Antone Holmes</span><span class="site-brand-sub">Enablement portfolio</span></a>

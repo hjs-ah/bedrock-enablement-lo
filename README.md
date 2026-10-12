@@ -41,6 +41,13 @@ The site bar (Case, Module, Storyboard, Portfolio) is the same markup on all thr
 
 Embedding: the module can be framed from any site (`<iframe src="https://.../module/">`). Add `?theme=dark` to the URL to force dark mode.
 
+## Module navigation, scoring and accessibility
+
+- A contents list (sidebar on wide screens, a sheet behind the Contents button on narrow ones) and a segmented progress bar sit around the module. A step opens only when every step before it is finished, the same rule as the Continue button, so the contents list cannot skip an activity or reach the results early.
+- The welcome screen states how scoring works. The numbers come from `content.js` (`scenarioMax`, `quizMax`, `passMark`), so they stay correct if you change the content. Each step is tagged "Practice: not scored" or "Scored".
+- Accessibility: keyboard operable, focus returns to the control or its feedback after each choice, the step heading takes focus on navigation, the page title names the step, zone tabs support arrow keys, screen reader labels mark your choice and the correct answer, and touch targets are at least 44 pixels. It was checked with axe-core (WCAG 2.2 AA tags plus best practices) on every step in light and dark with no violations, and at 320 pixels wide. That is an automated check, not a full audit with assistive technology.
+- The intro illustration is original inline SVG, so it works offline in an LMS and follows the light and dark themes.
+
 ## Filling in placeholders
 
 Case page text lives in `public/index.html`. Storyboard text lives in `content/storyboard.json`; `public/storyboard/index.html` is generated from it, so run `npm run build:all` after editing and commit both. Module content lives in `public/module/js/content.js`; rebuild the zip after editing.
