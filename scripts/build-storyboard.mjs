@@ -22,16 +22,23 @@ const parts = [
 ];
 
 const scenes = data.scenes.map((s) => `
-    <section class="scene" id="${s.id}" data-section="scene-${s.id}">
-      <h2>${s.title}</h2>
-      <p class="kind">${s.kind}</p>
-      <dl class="parts">
-${parts.map(([k, label]) => `        <dt>${label}</dt><dd>${s[k]}</dd>`).join('\n')}
-      </dl>
-    </section>`).join('\n');
+      <section class="scene" id="${s.id}" data-section="scene-${s.id}">
+        <h3>${s.title}</h3>
+        <p class="kind">${s.kind}</p>
+        <dl class="qparts">
+${parts.map(([k, label]) => `          <div class="qrow"><dt>${label}</dt><dd>${s[k]}</dd></div>`).join('\n')}
+        </dl>
+      </section>`).join('\n');
 
 const measurement = data.measurement.map((m) =>
-  `          <tr><th scope="row">${m.level}</th><td>${m.question}</td><td>${m.measure}</td><td>${m.source}</td></tr>`).join('\n');
+  `            <tr><th scope="row">${m.level}</th><td>${m.question}</td><td>${m.measure}</td><td>${m.source}</td></tr>`).join('\n');
+
+const toc = [
+  ['overview', 'Overview'],
+  ['approach', 'Design approach'],
+  ...data.scenes.map((sc) => [sc.id, sc.title]),
+  ['measurement', 'Measurement plan']
+].map(([id, label]) => `          <li><a href="#${id}" data-track="doc_toc" data-where="${id}">${label}</a></li>`).join('\n');
 
 // Screens are optional: captured by scripts/capture-screens.mjs.
 const screensDir = path.join(root, 'public', 'storyboard', 'screens');
@@ -49,7 +56,7 @@ if (manifest) {
 const navLink = (href, label, key, current) =>
   `        <a href="${href}"${current === key ? ' aria-current="page"' : ''} data-track="nav_${key}" data-where="header">${label}</a>`;
 
-const shell = ({ title, description, current, mainClass, extraHead = '', body }) => `<!doctype html>
+const shell = ({ title, description, current, mainClass, bodyClass = '', extraHead = '', body }) => `<!doctype html>
 <html lang="en" data-theme="light">
 <head>
   <meta charset="utf-8">
@@ -71,7 +78,7 @@ const shell = ({ title, description, current, mainClass, extraHead = '', body })
   <script defer src="/_vercel/insights/script.js"></script>
   <script defer src="/assets/site.js"></script>${extraHead}
 </head>
-<body>
+<body${bodyClass ? ` class="${bodyClass}"` : ''}>
   <a class="skip" href="#main">Skip to content</a>
   <aside class="draft" aria-label="Draft notice">Draft in progress. Values marked <span class="filler">like this</span> are placeholders and will be replaced before this case is shared.</aside>
   <header class="site-bar" id="siteBar">
@@ -98,38 +105,58 @@ ${body}
 
 /* ---------- document view ---------- */
 
-const docBody = `    <section data-section="storyboard-top">
+const docBody = `    <article class="qdoc" data-section="storyboard-top">
       <h1>${data.title}</h1>
-      <p class="lede" style="max-width:40rem">${data.intro}</p>
-      <p class="actions"><a class="btn" href="/storyboard/board/" data-track="open_board" data-where="storyboard">See it as a board</a></p>
-      <h2>Audience</h2>
-      <p style="max-width:40rem">${data.audience}</p>
-      <h2>Performance goal</h2>
-      <p style="max-width:40rem">${data.goal}</p>
-      <h2>Design approach</h2>
-      <ul class="plain" style="max-width:40rem">
-${data.approach.map((a) => `        <li>${a}</li>`).join('\n')}
-      </ul>
-    </section>
+      <p class="byline">Design record &middot; Antone Holmes &middot; Draft</p>
+      <p class="lede">${data.intro}</p>
+      <p class="actions"><a class="btn quiet" href="/storyboard/board/" data-track="open_board" data-where="storyboard">See it as a board</a></p>
+
+      <section id="overview" aria-labelledby="h-overview">
+        <h2 id="h-overview">Overview</h2>
+        <dl class="qparts">
+          <div class="qrow"><dt>Audience</dt><dd>${data.audience}</dd></div>
+          <div class="qrow"><dt>Performance goal</dt><dd>${data.goal}</dd></div>
+        </dl>
+        <nav class="qtoc" aria-label="Contents">
+          <p class="qtoc-h">Contents</p>
+          <ol>
+${toc}
+          </ol>
+        </nav>
+      </section>
+
+      <section id="approach" aria-labelledby="h-approach">
+        <h2 id="h-approach">Design approach</h2>
+        <ul class="plain">
+${data.approach.map((a) => `          <li>${a}</li>`).join('\n')}
+        </ul>
+      </section>
+
+      <section id="scenes" aria-labelledby="h-scenes">
+        <h2 id="h-scenes">Scenes</h2>
 ${scenes}
-    <section class="scene" id="measurement" data-section="measurement">
-      <h2>Measurement plan</h2>
-      <p class="kind">The four Kirkpatrick levels, with the evidence behind each.</p>
-      <div class="table-scroll">
-        <table class="data">
-          <thead><tr><th scope="col">Level</th><th scope="col">Question</th><th scope="col">Measure</th><th scope="col">Evidence</th></tr></thead>
-          <tbody>
+      </section>
+
+      <section id="measurement" data-section="measurement" aria-labelledby="h-measure">
+        <h2 id="h-measure">Measurement plan</h2>
+        <p class="kind">The four Kirkpatrick levels, with the evidence behind each.</p>
+        <div class="table-scroll">
+          <table class="qtable">
+            <thead><tr><th scope="col">Level</th><th scope="col">Question</th><th scope="col">Measure</th><th scope="col">Evidence</th></tr></thead>
+            <tbody>
 ${measurement}
-          </tbody>
-        </table>
-      </div>
-    </section>`;
+            </tbody>
+          </table>
+        </div>
+      </section>
+    </article>`;
 
 const doc = shell({
   title: data.title,
   description: 'The design record for a Bedrock sales enablement module: audience, goal, scene-by-scene plan, and measurement.',
   current: 'storyboard',
-  mainClass: 'wrap',
+  mainClass: 'doc',
+  bodyClass: 'doc-page',
   body: docBody
 });
 

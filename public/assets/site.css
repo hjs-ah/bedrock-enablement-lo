@@ -230,24 +230,53 @@ ul.plain li { margin-bottom: .45rem; }
 footer.site-foot { max-width: 72rem; margin: 0 auto; padding: 0 var(--gutter) 3rem; font-size: .85rem; line-height: 1.6; color: var(--ink-2); }
 footer.site-foot p { max-width: 40rem; }
 
-/* Storyboard */
-.scene { border-top: 1px solid var(--line); padding: 2rem 0; }
-.scene h2 { margin-bottom: .25rem; }
-.scene .kind { font-size: .9rem; line-height: 1.5; color: var(--ink-2); margin-bottom: 1rem; }
-section[data-section="storyboard-top"] { padding-top: 2.25rem; }
-section[data-section="storyboard-top"] h1 { font: 600 clamp(1.9rem, 4.6vw, 3rem)/1.15 var(--font); letter-spacing: -.02em; margin: 0 0 1rem; }
-section[data-section="storyboard-top"] h2 { margin-top: 2rem; }
-section[data-section="storyboard-top"] .lede { font-size: 1.1rem; color: var(--ink-2); }
-dl.parts { display: grid; grid-template-columns: minmax(7rem, 9.5rem) minmax(0, 1fr); gap: .7rem 1.5rem; margin: 0; max-width: 52rem; font-size: .95rem; }
-dl.parts dt { font-weight: 600; font-size: .85rem; line-height: 1.7; color: var(--ink-2); }
-dl.parts dd { margin: 0; }
-@media (max-width: 40rem) { dl.parts { grid-template-columns: 1fr; gap: .1rem; } dl.parts dd { margin-bottom: .75rem; } }
+/* Storyboard document view: a Quip-style page. One narrow centered column; the site bar narrows to match it. */
+body.doc-page .site-bar-in { max-width: calc(50rem + 2 * var(--gutter)); }
+main#main.doc { max-width: 50rem; }
+.qdoc { padding: clamp(1.5rem, 5vw, 3.25rem) clamp(1.25rem, 5vw, 3.5rem) clamp(2rem, 6vw, 3.5rem); font-size: 1rem; line-height: 1.7; }
+.qdoc h1 { font: 700 clamp(1.8rem, 4.4vw, 2.5rem)/1.2 var(--font); letter-spacing: -.02em; margin: 0 0 .5rem; }
+.qdoc .byline { margin: 0 0 1.5rem; font-size: .85rem; color: var(--ink-2); }
+.qdoc .lede { font-size: 1.1rem; color: var(--ink-2); margin: 0 0 1.25rem; }
+.qdoc p { max-width: none; }
+.qdoc section { scroll-margin-top: 1rem; }
+.qdoc h2 { font: 600 1.45rem/1.3 var(--font); letter-spacing: -.01em; margin: 2.5rem 0 .75rem; padding-top: 1.25rem; border-top: 1px solid var(--line); }
+.qdoc h3 { font: 600 1.15rem/1.35 var(--font); margin: 2rem 0 .15rem; scroll-margin-top: 1rem; }
+.qdoc .kind { font-size: .88rem; line-height: 1.5; color: var(--ink-2); margin: 0 0 .75rem; }
+.qdoc ul.plain { margin: 0 0 1rem; padding-left: 1.25rem; }
+.qdoc ul.plain li { margin-bottom: .55rem; }
+.qdoc .actions { margin: 0 0 .5rem; }
+.qdoc a { color: var(--accent-text); }
+.qdoc a.btn { color: var(--accent-text); text-decoration: none; }
+
+/* Label and detail rows, like a two-column table in a Quip doc */
+dl.qparts { margin: 0 0 1.25rem; border: 1px solid var(--line); border-radius: var(--radius-sm); overflow: hidden; font-size: .95rem; line-height: 1.6; }
+.qrow { display: grid; grid-template-columns: 9.5rem minmax(0, 1fr); border-top: 1px solid var(--line); }
+.qrow:first-child { border-top: 0; }
+.qrow dt { margin: 0; padding: .65rem .9rem; background: var(--surface-2); border-right: 1px solid var(--line); font-weight: 600; font-size: .85rem; color: var(--ink-2); }
+.qrow dd { margin: 0; padding: .65rem .9rem; }
+
+.qtoc { margin: 1.25rem 0 0; font-size: .92rem; }
+.qtoc-h { margin: 0 0 .35rem; font-size: .78rem; font-weight: 600; letter-spacing: .06em; text-transform: uppercase; color: var(--ink-2); }
+.qtoc ol { margin: 0; padding-left: 1.25rem; }
+.qtoc li { margin: 0 0 .25rem; break-inside: avoid; }
+
+table.qtable { border-collapse: collapse; width: 100%; font-size: .9rem; line-height: 1.55; border: 1px solid var(--line); }
+.qtable th, .qtable td { text-align: left; vertical-align: top; padding: .6rem .8rem; border: 1px solid var(--line); }
+.qtable thead th { background: var(--surface-2); font-weight: 600; font-size: .82rem; color: var(--ink-2); }
+.qtable tbody th { font-weight: 600; width: 22%; }
+.qdoc .table-scroll { overflow-x: auto; margin-bottom: 1rem; }
+.qtable { min-width: 34rem; }
+
+@media (max-width: 40rem) {
+  .qrow { grid-template-columns: 1fr; }
+  .qrow dt { border-right: 0; border-bottom: 1px solid var(--line); padding-bottom: .4rem; }
+}
 
 /* Visually hidden, still read by screen readers */
 .sr { position: absolute; width: 1px; height: 1px; margin: -1px; padding: 0; overflow: hidden; clip: rect(0 0 0 0); clip-path: inset(50%); white-space: nowrap; border: 0; }
 
 /* Storyboard board: one column per scene, scrolls sideways. Row headings stay visible on the left. */
-main#main.board-page { max-width: none; background: transparent; border: 0; box-shadow: none; overflow: visible; }
+main#main.board-page { background: transparent; border: 0; box-shadow: none; overflow: visible; }
 .board-top { max-width: 72rem; margin: 0 auto; padding: 1.25rem 0 0; }
 .board-top h1 { font: 600 clamp(1.9rem, 4.6vw, 3rem)/1.15 var(--font); letter-spacing: -.02em; margin: 0 0 .75rem; }
 .board-top .lede { max-width: 40rem; font-size: 1.1rem; color: var(--ink-2); }
@@ -282,7 +311,7 @@ table.board-table { border-collapse: separate; border-spacing: 0; width: max-con
   body { background: #fff; color: #000; }
   body::before { display: none; }
   main#main { border: 0; box-shadow: none; margin: 0; width: 100%; }
-  .board-tools, .board-note { display: none; }
+  .board-tools, .board-note, .qtoc { display: none; }
   .board { max-height: none; overflow: visible; border: 0; box-shadow: none; }
   .board-table thead th, .board-table thead td, .board-table tbody th[scope="row"] { position: static; }
   @page { size: landscape; }
