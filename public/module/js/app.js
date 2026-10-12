@@ -17,6 +17,13 @@
   var barWrap = document.getElementById('barWrap');
   var stepLabel = document.getElementById('stepLabel');
   var modeEl = document.getElementById('mode');
+  var lmsBtn = document.getElementById('lmsBtn');
+  var lmsPanel = document.getElementById('lmsPanel');
+  var resetBtn = document.getElementById('resetBtn');
+  var resetDialog = document.getElementById('resetDialog');
+  var resetYes = document.getElementById('resetYes');
+  var resetNo = document.getElementById('resetNo');
+  var resetOpener = null;
 
   var SCENES = ['welcome', 'warmup', 'zones', 'planner', 'scen0', 'scen1', 'scen2', 'quiz', 'results'];
   var TITLES = {
@@ -174,7 +181,7 @@
   function renderWelcome() {
     var total = M.scenarioMax + M.quizMax;
     var resume = state.far > 0
-      ? '<p class="resume">You have progress saved. <button type="button" class="link" data-act="restart">Start over</button></p>'
+      ? '<p class="resume">You have progress saved. <button type="button" class="link" data-act="reset">Start over</button></p>'
       : '';
     var where = S.isLMS()
       ? 'Your score and pass or fail status go to your learning system when you finish.'
@@ -191,6 +198,9 @@
       '<li><strong>Everything else is practice.</strong> The warm-up, zone sorting, and planner are not scored.</li>' +
       '<li><strong>Pass mark: ' + M.passMark + '%, which is ' + passPoints() + ' of ' + total + ' points.</strong> If you finish under it, you can retry the conversations and the quiz. Feedback explains every answer, and there is no timer.</li>' +
       '</ul><p class="small">' + esc(where) + '</p></section>' +
+      '<section class="scorebox" aria-labelledby="sm-h"><h2 id="sm-h">Where SCORM comes in</h2>' +
+      '<p>This module is packaged as <strong>SCORM 1.2</strong>, the long-standing standard that lets a learning system (an LMS) track training. It reports four things: whether you finished, your score, where you stopped, and your saved answers. That is how a manager sees results and how you can leave and come back.</p>' +
+      '<p class="small">' + esc(S.isLMS() ? 'An LMS is connected right now, so these go to it as you work.' : 'No LMS is connected here, so the module simulates one and saves to your browser.') + ' <button type="button" class="link" data-act="lms">See what the LMS receives</button></p></section>' +
       '<section class="scorebox" aria-labelledby="mv-h"><h2 id="mv-h">Moving around</h2>' +
       '<p>Use <strong>Continue</strong> and <strong>Back</strong>, or open <strong>Contents</strong> to jump to any step you have unlocked. Continue turns on when you finish the activities on a step. Everything works with a keyboard: Tab to move, Enter or Space to choose.</p></section>' +
       '<p class="callout">' + esc(M.disclaimer) + '</p>' + resume;
@@ -339,7 +349,9 @@
       '<table class="plain"><tbody>' +
       '<tr><th scope="row">Customer conversations</th><td>' + sp + ' of ' + M.scenarioMax + '</td></tr>' +
       '<tr><th scope="row">Knowledge check</th><td>' + qp + ' of ' + M.quizMax + '</td></tr>' +
-      '</tbody></table>';
+      '</tbody></table>' +
+      '<p class="small">' + esc(S.isLMS() ? 'Sent to your LMS: score ' + pct + ', status ' + (passed ? 'passed' : 'failed') + '.' : 'An LMS would receive: score ' + pct + ', status ' + (passed ? 'passed' : 'failed') + '.') +
+      ' <button type="button" class="link" data-act="lms">See the LMS data</button></p>';
     if (!passed) {
       html += '<p><button type="button" class="btn" data-act="retry">Retry the conversations and quiz</button></p>';
     }
@@ -373,6 +385,88 @@
     quiz: renderQuiz,
     results: renderResults
   };
+
+  /* ---------- LMS data panel and reset ---------- */
+
+  var STATUS_WORDS = {
+    'not attempted': 'not attempted',
+    incomplete: 'incomplete',
+    passed: 'passed',
+    failed: 'failed',
+    completed: 'completed'
+  };
+
+  function renderLms() {
+    var snap = S.snapshot();
+    var rows = [
+      ['Status', 'cmi.core.lesson_status', STATUS_WORDS[snap.status] || snap.status || 'not set',
+        'Finished or not, and pass or fail. This is what shows on the LMS roster and in completion reports.'],
+      ['Score', 'cmi.core.score.raw', snap.score === '' ? 'not yet' : snap.score + ' of 100',
+        'The percent you earned. It goes to the LMS gradebook. The pass mark is ' + M.passMark + '.'],
+      ['Place', 'cmi.core.lesson_location', snap.location || 'none',
+        'The step you were on, so you can leave and come back to the same spot.'],
+      ['Saved answers', 'cmi.suspend_data', snap.suspendLength + ' of ' + snap.suspendMax + ' characters',
+        'Your answers, packed small so a resume restores them. SCORM 1.2 allows only ' + snap.suspendMax + ' characters, so the module keeps this compact.'],
+      ['Time spent', 'cmi.core.session_time', 'sent when you leave',
+        'Reported once, when the session ends.']
+    ];
+    var html = '<div class="sheet-head"><h2 id="lmsH" tabindex="-1">What the LMS receives</h2>' +
+      '<button type="button" class="btn ghost" data-close="lms">Close</button></div>' +
+      '<p class="lms-mode' + (snap.live ? '' : ' sim') + '">' + (snap.live
+        ? '<strong>Connected to your LMS.</strong> These are the values it has received.'
+        : '<strong>No LMS here, so this is a simulation.</strong> In an LMS, the same calls go to its SCORM API and it stores the values below. Here they are saved in your browser.') + '</p>' +
+      '<ul class="lms-list">' + rows.map(function (r) {
+        return '<li><div class="lms-row"><strong>' + esc(r[0]) + '</strong><span class="lms-val">' + esc(r[2]) + '</span></div>' +
+          '<code>' + esc(r[1]) + '</code><p class="lms-why">' + esc(r[3]) + '</p></li>';
+      }).join('') + '</ul>' +
+      '<h3>Recent calls</h3>' +
+      '<ol class="lms-log" aria-label="Recent SCORM calls, newest first">' + (snap.calls.slice(-10).reverse().map(function (c) {
+        return '<li><code>' + esc(c) + '</code></li>';
+      }).join('') || '<li><code>none yet</code></li>') + '</ol>' +
+      '<p class="lms-purpose"><strong>Why SCORM.</strong> On its own, a module is just a web page. SCORM is the agreed way for it to tell any LMS who finished, who passed and where they stopped, so training teams get results without custom integration and learners keep their place.</p>';
+    lmsPanel.innerHTML = html;
+  }
+
+  function setLms(open, returnFocus) {
+    if (open) {
+      setToc(false);
+      closeReset(false);
+      renderLms();
+      lmsPanel.hidden = false;
+      var h = document.getElementById('lmsH');
+      if (h) { h.focus({ preventScroll: true }); }
+      track('lms_panel_opened', { mode: S.isLMS() ? 'lms' : 'web' });
+    } else {
+      lmsPanel.hidden = true;
+      if (returnFocus) { lmsBtn.focus(); }
+    }
+    lmsBtn.setAttribute('aria-expanded', String(open));
+  }
+
+  function openReset(opener) {
+    setToc(false);
+    setLms(false, false);
+    resetOpener = opener || resetBtn;
+    document.getElementById('rsLms').hidden = !S.isLMS();
+    resetDialog.hidden = false;
+    resetNo.focus({ preventScroll: true });
+  }
+
+  function closeReset(returnFocus) {
+    if (resetDialog.hidden) { return; }
+    resetDialog.hidden = true;
+    if (returnFocus && resetOpener && document.body.contains(resetOpener)) { resetOpener.focus({ preventScroll: true }); }
+  }
+
+  function resetAll() {
+    state = { i: 0, far: 0, warm: null, sort: {}, plan: {}, scen: {}, quiz: {}, done: false };
+    S.reset();
+    resetDialog.hidden = true;
+    paint(true);
+    save();
+    say('The module was reset. You are back at the welcome screen.');
+    track('module_reset', { mode: S.isLMS() ? 'lms' : 'web' });
+  }
 
   /* ---------- gating and navigation ---------- */
 
@@ -462,6 +556,7 @@
   function go(to) {
     if (to < 0 || to >= SCENES.length) { return; }
     setToc(false);
+    setLms(false, false);
     state.i = to;
     state.far = Math.max(state.far, to);
     paint(true);
@@ -588,11 +683,11 @@
       save();
       track('module_retry', {});
       return;
-    } else if (act === 'restart') {
-      state = { i: 0, far: 0, warm: null, sort: {}, plan: {}, scen: {}, quiz: {}, done: false };
-      S.setStatus('incomplete');
-      paint(true);
-      save();
+    } else if (act === 'reset') {
+      openReset(t);
+      return;
+    } else if (act === 'lms') {
+      setLms(true);
       return;
     } else if (act === 'print') {
       track('jobaid_printed', {});
@@ -623,11 +718,24 @@
     if (el) { el.focus({ preventScroll: true }); }
   });
 
+  lmsBtn.addEventListener('click', function () { setLms(lmsPanel.hidden); });
+  lmsPanel.addEventListener('click', function (ev) {
+    if (ev.target.closest('[data-close="lms"]')) { setLms(false, true); }
+  });
+  resetBtn.addEventListener('click', function () { openReset(resetBtn); });
+  resetNo.addEventListener('click', function () { closeReset(true); });
+  resetYes.addEventListener('click', resetAll);
+  S.onChange(function () { if (!lmsPanel.hidden) { renderLms(); } });
+
   nextBtn.addEventListener('click', function () { go(state.i + 1); });
   prevBtn.addEventListener('click', function () { go(state.i - 1); });
 
   // Contents: sidebar on wide screens, a sheet above the buttons on narrow ones.
-  tocBtn.addEventListener('click', function () { setToc(outline.getAttribute('data-open') !== 'true'); });
+  tocBtn.addEventListener('click', function () {
+    var open = outline.getAttribute('data-open') !== 'true';
+    if (open) { setLms(false, false); closeReset(false); }
+    setToc(open);
+  });
   outline.addEventListener('click', function (ev) {
     var t = ev.target.closest('[data-go]');
     if (!t) { return; }
@@ -639,7 +747,10 @@
     if (to !== state.i) { track('contents_jump', { to: SCENES[to] }); go(to); } else { setToc(false); }
   });
   document.addEventListener('keydown', function (ev) {
-    if (ev.key === 'Escape' && outline.getAttribute('data-open') === 'true') { setToc(false); tocBtn.focus(); }
+    if (ev.key !== 'Escape') { return; }
+    if (!resetDialog.hidden) { closeReset(true); }
+    else if (!lmsPanel.hidden) { setLms(false, true); }
+    else if (outline.getAttribute('data-open') === 'true') { setToc(false); tocBtn.focus(); }
   });
 
   window.addEventListener('beforeunload', function () { S.finish(!state.done); });

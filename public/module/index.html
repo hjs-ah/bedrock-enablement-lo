@@ -32,7 +32,11 @@
   <section class="top" aria-label="Progress">
     <div class="top-row">
       <div class="brand">Talking Bedrock with customers</div>
-      <button type="button" id="tocBtn" class="toc-btn" aria-expanded="false" aria-controls="outline">Contents</button>
+      <div class="top-actions">
+        <button type="button" id="lmsBtn" class="top-btn" aria-expanded="false" aria-controls="lmsPanel">LMS data</button>
+        <button type="button" id="resetBtn" class="top-btn" aria-haspopup="dialog">Reset</button>
+        <button type="button" id="tocBtn" class="toc-btn" aria-expanded="false" aria-controls="outline">Contents</button>
+      </div>
     </div>
     <div id="barWrap" class="track" role="progressbar" aria-label="Module progress" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"></div>
     <div id="stepLabel" class="step"></div>
@@ -42,6 +46,17 @@
     <nav id="outline" class="outline" aria-label="Module contents" data-open="false"></nav>
     <main id="stage" tabindex="-1"></main>
   </div>
+
+  <section id="lmsPanel" class="sheet" aria-labelledby="lmsH" hidden tabindex="-1"></section>
+  <section id="resetDialog" class="sheet sheet-confirm" role="alertdialog" aria-modal="false" aria-labelledby="rsH" aria-describedby="rsD" hidden>
+    <h2 id="rsH">Reset the module?</h2>
+    <p id="rsD">This clears your answers, your score and your place, and takes you back to the welcome screen.</p>
+    <p id="rsLms" class="small" hidden>Your learning system may keep your earlier result. Resetting only marks this attempt as incomplete again.</p>
+    <div class="sheet-actions">
+      <button type="button" id="resetNo" class="btn ghost">Keep my progress</button>
+      <button type="button" id="resetYes" class="btn">Reset and start over</button>
+    </div>
+  </section>
 
   <div id="announce" class="sr" role="status" aria-live="polite" aria-atomic="true"></div>
 

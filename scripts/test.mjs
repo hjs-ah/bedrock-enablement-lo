@@ -164,13 +164,15 @@ const navOf = (html) => {
 const pages = {
   case: pageHtml('index.html'),
   module: pageHtml('module', 'index.html'),
-  storyboard: pageHtml('storyboard', 'index.html')
+  storyboard: pageHtml('storyboard', 'index.html'),
+  board: pageHtml('storyboard', 'board', 'index.html')
 };
 
 ok('site nav has the same items, order and links on the case page, module and storyboard', () => {
   const ref = navOf(pages.case);
   assert.equal(navOf(pages.module), ref);
   assert.equal(navOf(pages.storyboard), ref);
+  assert.equal(navOf(pages.board), ref);
 });
 
 ok('each page marks only its own nav item as current', () => {
@@ -178,6 +180,7 @@ ok('each page marks only its own nav item as current', () => {
   assert.deepEqual(current(pages.case), ['/']);
   assert.deepEqual(current(pages.module), ['/module/']);
   assert.deepEqual(current(pages.storyboard), ['/storyboard/']);
+  assert.deepEqual(current(pages.board), ['/storyboard/']);
 });
 
 ok('hosting keeps the trailing slash so the module\'s relative asset paths resolve', () => {
@@ -198,6 +201,110 @@ ok('old teal palette and fonts are gone', () => {
   for (const f of [['assets', 'site.css'], ['module', 'css', 'module.css'], ['assets', 'favicon.svg']]) {
     assert.ok(!/0C6B7A|5EC4D3|084F5B/i.test(pageHtml(...f)), f.join('/'));
   }
+});
+
+/* ---- SCORM visibility: log, snapshot, reset ---- */
+ok('wrapper keeps a log of calls and a snapshot of what the LMS holds', () => {
+  const lms = mockLms();
+  const ctx = sandbox({ API: lms.API });
+  vm.runInContext(js('scorm.js'), ctx);
+  ctx.Scorm.init();
+  ctx.Scorm.setScore(88);
+  ctx.Scorm.saveProgress('quiz', '{"i":7}');
+  const snap = ctx.Scorm.snapshot();
+  assert.equal(snap.live, true);
+  assert.equal(snap.score, '88');
+  assert.equal(snap.location, 'quiz');
+  assert.equal(snap.suspendLength, 7);
+  assert.equal(snap.suspendMax, 4096);
+  assert.ok(snap.calls.includes('LMSInitialize("")'));
+  assert.ok(snap.calls.some((c) => c.startsWith('LMSSetValue("cmi.core.score.raw"')));
+  assert.ok(snap.calls.includes('LMSCommit("")'));
+});
+
+ok('wrapper simulates the same calls in browser mode', () => {
+  const store = {};
+  const ctx = sandbox({ localStorage: { getItem: (k) => store[k] ?? null, setItem: (k, v) => { store[k] = v; }, removeItem: (k) => { delete store[k]; } } });
+  vm.runInContext(js('scorm.js'), ctx);
+  assert.equal(ctx.Scorm.init(), false);
+  const snap = ctx.Scorm.snapshot();
+  assert.equal(snap.live, false);
+  assert.equal(snap.status, 'incomplete');
+  assert.ok(snap.calls.includes('LMSInitialize("")'));
+});
+
+ok('wrapper log stays short and long values are shortened', () => {
+  const ctx = sandbox();
+  vm.runInContext(js('scorm.js'), ctx);
+  for (let i = 0; i < 100; i += 1) ctx.Scorm.set('cmi.suspend_data', 'x'.repeat(200));
+  const snap = ctx.Scorm.snapshot();
+  assert.ok(snap.calls.length <= 40);
+  assert.ok(snap.calls[snap.calls.length - 1].length < 120);
+});
+
+ok('reset in an LMS clears place and saved answers and marks the attempt incomplete', () => {
+  const lms = mockLms();
+  const ctx = sandbox({ API: lms.API });
+  vm.runInContext(js('scorm.js'), ctx);
+  ctx.Scorm.init();
+  ctx.Scorm.saveProgress('quiz', '{"i":7}');
+  ctx.Scorm.setStatus('passed');
+  ctx.Scorm.reset();
+  assert.equal(lms.store['cmi.core.lesson_location'], '');
+  assert.equal(lms.store['cmi.suspend_data'], '');
+  assert.equal(lms.store['cmi.core.lesson_status'], 'incomplete');
+});
+
+ok('reset in browser mode clears everything the module saved', () => {
+  const store = {};
+  const ctx = sandbox({ localStorage: { getItem: (k) => store[k] ?? null, setItem: (k, v) => { store[k] = v; }, removeItem: (k) => { delete store[k]; } } });
+  vm.runInContext(js('scorm.js'), ctx);
+  ctx.Scorm.init();
+  ctx.Scorm.saveProgress('quiz', '{"i":7}');
+  ctx.Scorm.setScore(90);
+  ctx.Scorm.setStatus('passed');
+  ctx.Scorm.reset();
+  const left = Object.keys(store).filter((k) => !k.endsWith('lesson_status'));
+  assert.deepEqual(left, []);
+  assert.equal(ctx.Scorm.get('cmi.core.lesson_status'), 'incomplete');
+});
+
+ok('module has a reset button with a confirmation and an LMS data panel', () => {
+  for (const id of ['resetBtn', 'resetDialog', 'resetYes', 'resetNo', 'lmsBtn', 'lmsPanel']) {
+    assert.match(pages.module, new RegExp(`id="${id}"`), id);
+  }
+  assert.match(pages.module, /role="alertdialog"/);
+});
+
+/* ---- storyboard: one file feeds the document view and the board ---- */
+const story = JSON.parse(fs.readFileSync(path.join(root, 'content', 'storyboard.json'), 'utf8'));
+
+ok('storyboard scenes match the module steps, in order', () => {
+  const m = js('app.js').match(/var SCENES = \[([^\]]+)\]/);
+  assert.ok(m, 'SCENES list found');
+  const steps = m[1].split(',').map((x) => x.trim().replace(/'/g, ''));
+  assert.deepEqual(story.scenes.map((s) => s.id), steps);
+});
+
+ok('document view and board both carry every scene and every part from the JSON', () => {
+  for (const [name, html] of [['storyboard', pages.storyboard], ['board', pages.board]]) {
+    for (const sc of story.scenes) {
+      for (const k of ['title', 'kind', 'objective', 'onScreen', 'interaction', 'feedback', 'assessment', 'rationale']) {
+        assert.ok(html.includes(sc[k]), `${name} is missing ${sc.id}.${k}. Run npm run build:storyboard.`);
+      }
+    }
+  }
+});
+
+ok('board has one column per scene', () => {
+  const cols = pages.board.match(/<th scope="col">/g) || [];
+  assert.equal(cols.length, story.scenes.length);
+});
+
+ok('every board screenshot that is linked exists on disk', () => {
+  const srcs = [...pages.board.matchAll(/<img class="shot" src="([^"]+)"/g)].map((m) => m[1]);
+  assert.ok(srcs.length > 0, 'board shows screenshots');
+  for (const src of srcs) assert.ok(fs.existsSync(path.join(root, 'public', src)), src);
 });
 
 console.log(`\n${passed} checks passed`);

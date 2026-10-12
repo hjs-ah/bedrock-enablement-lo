@@ -8,6 +8,7 @@
     "Scenario-based practice: three branching customer conversations with a strong, a partial, and a weak answer at each decision, and feedback that explains why.",
     "Stable framework, swappable reference: product details change quickly, so the seven criteria stay put and facts live in one content file with a verify-before-quoting note.",
     "Learner control with guardrails: a contents list and a progress bar show where the learner is and let them return to any step they have unlocked. Continue stays locked until a step's activities are done, so the assessment cannot be skipped.",
+    "SCORM made visible: an LMS data panel in the header shows the four values the module reports (status, score, place, saved answers) and the recent calls that carry them. Without an LMS it simulates one, so anyone reviewing the work can see what the standard is for. A reset button clears the attempt after a confirmation.",
     "Accessible by default: keyboard operable, focus kept in place after each choice, screen reader announcements and labeled tabs and progress, color never the only signal, large touch targets, works at phone width, respects reduced motion."
   ],
   "scenes": [
@@ -16,11 +17,11 @@
       "title": "Welcome",
       "kind": "Orientation, about 1 minute",
       "objective": "Set expectations and show what the learner will be able to do.",
-      "onScreen": "Title, a one-sentence promise, an illustration of the central exchange (the customer asks where to start; the seller asks about their work), four performance objectives, a plain summary of how the module is scored, how to move around, and a note that Bedrock facts change and should be verified before quoting to customers.",
-      "interaction": "None. Learners can resume where they left off or start over.",
+      "onScreen": "Title, a one-sentence promise, an illustration of the central exchange (the customer asks where to start; the seller asks about their work), four performance objectives, a plain summary of how the module is scored, a short box on where SCORM comes in, how to move around, and a note that Bedrock facts change and should be verified before quoting to customers.",
+      "interaction": "A link opens the LMS data panel. Learners can resume where they left off, or reset from the header at any time (a confirmation appears first).",
       "feedback": "None.",
       "assessment": "None. The scoring summary is here so learners know what counts before they make a single decision.",
-      "rationale": "Objectives are written as behaviors the learner can do on a call, not topics they will see. Saying up front how scoring works removes guesswork."
+      "rationale": "Objectives are written as behaviors the learner can do on a call, not topics they will see. Saying up front how scoring works removes guesswork. The SCORM box says what the standard is for in two sentences, and the panel it links to shows the real values."
     },
     {
       "id": "warmup",
@@ -105,9 +106,9 @@
       "kind": "Close, about 1 minute",
       "objective": "Report the outcome and leave the learner with something to use on the next call.",
       "onScreen": "Score, pass or retry, a points breakdown, and a one-page job aid: three first questions, seven criteria, a capacity checklist, and the closing rule.",
-      "interaction": "Retry the conversations and quiz if under the pass mark. Print the job aid.",
+      "interaction": "Retry the conversations and quiz if under the pass mark. Open the LMS data panel. Print the job aid.",
       "feedback": "Pass or not-yet message.",
-      "assessment": "Reports score and pass or fail to the LMS (SCORM 1.2) when launched from one.",
+      "assessment": "Reports score and pass or fail to the LMS (SCORM 1.2) when launched from one. A line under the score shows what was sent, with a link to the LMS data panel.",
       "rationale": "The job aid is the part reps will actually reuse. It prints cleanly on one page."
     }
   ],

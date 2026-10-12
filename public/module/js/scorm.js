@@ -11,6 +11,18 @@
   var live = false;
   var started = 0;
   var STORE_KEY = 'bedrock-lo-v1';
+  var KEYS = ['cmi.core.lesson_status', 'cmi.core.lesson_location', 'cmi.suspend_data', 'cmi.core.score.raw', 'cmi.core.score.min', 'cmi.core.score.max'];
+
+  // Recent calls, newest last. The module's "LMS data" panel shows these so a reader can
+  // see what an LMS would receive. In browser mode the same calls are simulated.
+  var log = [];
+  var listener = null;
+  function note(call) {
+    log.push(call);
+    if (log.length > 40) { log.shift(); }
+    if (listener) { try { listener(); } catch (e) { /* display only */ } }
+  }
+  function q(v) { return '"' + String(v) + '"'; }
 
   // Walks up the frame chain looking for the LMS API. A parent on another origin
   // (for example, this module embedded in a different site) throws on property access;
@@ -65,13 +77,12 @@
       if (api) {
         live = String(api.LMSInitialize('')) === 'true';
       }
-      if (live) {
-        var status = String(api.LMSGetValue('cmi.core.lesson_status'));
-        if (status === 'not attempted' || status === '') {
-          api.LMSSetValue('cmi.core.lesson_status', 'incomplete');
-        }
-        api.LMSCommit('');
+      note('LMSInitialize("")');
+      var status = live ? String(api.LMSGetValue('cmi.core.lesson_status')) : (lsGet('cmi.core.lesson_status') || '');
+      if (status === 'not attempted' || status === '') {
+        this.set('cmi.core.lesson_status', 'incomplete');
       }
+      this.commit();
       return live;
     },
 
@@ -83,14 +94,52 @@
     },
 
     set: function (key, val) {
+      var shown = String(val);
+      if (shown.length > 48) { shown = shown.slice(0, 45) + '...'; }
+      note('LMSSetValue(' + q(key) + ', ' + q(shown) + ')');
       if (live) { return String(api.LMSSetValue(key, String(val))) === 'true'; }
       lsSet(key, String(val));
       return true;
     },
 
     commit: function () {
+      note('LMSCommit("")');
       if (live) { return String(api.LMSCommit('')) === 'true'; }
       return true;
+    },
+
+    // What the LMS (or, in browser mode, this browser) currently holds for the four values that matter.
+    snapshot: function () {
+      var data = this.get('cmi.suspend_data');
+      return {
+        live: live,
+        status: this.get('cmi.core.lesson_status'),
+        score: this.get('cmi.core.score.raw'),
+        location: this.get('cmi.core.lesson_location'),
+        suspendLength: data.length,
+        suspendMax: 4096,
+        calls: log.slice()
+      };
+    },
+
+    onChange: function (fn) { listener = fn; },
+
+    // Clears the bookmark and saved answers and marks the attempt incomplete.
+    // SCORM 1.2 has no "new attempt" call, so an LMS may still keep an earlier score or status:
+    // that is the LMS's rule, not the module's.
+    reset: function () {
+      note('// reset: bookmark and saved answers cleared');
+      if (live) {
+        this.set('cmi.core.lesson_location', '');
+        this.set('cmi.suspend_data', '');
+        this.set('cmi.core.lesson_status', 'incomplete');
+        this.commit();
+        return;
+      }
+      KEYS.forEach(function (k) {
+        try { global.localStorage.removeItem(STORE_KEY + ':' + k); } catch (e) { /* storage unavailable */ }
+      });
+      this.set('cmi.core.lesson_status', 'incomplete');
     },
 
     saveProgress: function (location, suspendData) {
@@ -118,6 +167,7 @@
 
     finish: function (suspend) {
       if (!live) { return; }
+      note('LMSFinish("")');
       api.LMSSetValue('cmi.core.session_time', sessionTime(Date.now() - started));
       api.LMSSetValue('cmi.core.exit', suspend ? 'suspend' : '');
       api.LMSCommit('');

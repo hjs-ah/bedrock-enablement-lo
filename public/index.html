@@ -133,12 +133,41 @@
           <div class="actions">
             <a class="btn" href="/module/" data-track="open_module" data-where="module">Play the module</a>
             <a class="btn quiet" href="/downloads/bedrock-selection-scorm12.zip" download data-track="download_scorm" data-where="module">Download the SCORM 1.2 package</a>
+            <a class="btn quiet" href="/storyboard/board/" data-track="open_board" data-where="module">See the storyboard board</a>
           </div>
           <p style="margin-top:1.1rem">The same build runs in a browser and reports completion and score to any learning management system that supports SCORM 1.2.</p>
           <p>For a second view of my tool range, here is a sample built in Articulate Rise: <span class="filler">link to the Rise sample</span></p>
         </div>
         <aside class="note">
           <p>The Rise sample covers a different topic. It shows tool range; the Bedrock module shows design and build range.</p>
+        </aside>
+      </div>
+    </section>
+
+    <section class="wrap block" id="scorm" data-section="scorm">
+      <div class="row">
+        <div>
+          <h2>Where SCORM comes in</h2>
+          <p>On its own, a module is just a web page. SCORM is the standard that lets it tell a learning management system (LMS) what happened, so a training team gets results without custom integration and learners keep their place. Open the module and choose <strong>LMS data</strong> to watch these values change as you answer.</p>
+          <div class="table-scroll">
+            <table class="data">
+              <caption>What the module reports, and what the training team gets</caption>
+              <thead><tr><th scope="col">Module reports</th><th scope="col">Training team sees</th></tr></thead>
+              <tbody>
+                <tr><th scope="row">Status: passed, failed or incomplete</th><td>Completion and pass rates on the roster.</td></tr>
+                <tr><th scope="row">Score from 0 to 100</th><td>The gradebook and cohort averages.</td></tr>
+                <tr><th scope="row">Place: the step the learner is on</th><td>Learners resume where they stopped.</td></tr>
+                <tr><th scope="row">Saved answers, up to 4,096 characters</th><td>A resume restores choices and points.</td></tr>
+                <tr><th scope="row">Time spent</th><td>Time on task, reported when the session ends.</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="actions" style="margin-top:1.1rem">
+            <a class="btn" href="/module/" data-track="open_module" data-where="scorm">Open the module</a>
+          </div>
+        </div>
+        <aside class="note">
+          <p><strong>Why SCORM 1.2.</strong> Nearly every LMS supports it, so one package works almost anywhere. It is also limited: one score, a small save area, and no record of which wrong answer a learner chose. xAPI can carry that detail, and it would be the next step if a team wanted question-level data.</p>
         </aside>
       </div>
     </section>

@@ -243,11 +243,49 @@ dl.parts dt { font-weight: 600; font-size: .85rem; line-height: 1.7; color: var(
 dl.parts dd { margin: 0; }
 @media (max-width: 40rem) { dl.parts { grid-template-columns: 1fr; gap: .1rem; } dl.parts dd { margin-bottom: .75rem; } }
 
+/* Visually hidden, still read by screen readers */
+.sr { position: absolute; width: 1px; height: 1px; margin: -1px; padding: 0; overflow: hidden; clip: rect(0 0 0 0); clip-path: inset(50%); white-space: nowrap; border: 0; }
+
+/* Storyboard board: one column per scene, scrolls sideways. Row headings stay visible on the left. */
+main#main.board-page { max-width: none; background: transparent; border: 0; box-shadow: none; overflow: visible; }
+.board-top { max-width: 72rem; margin: 0 auto; padding: 1.25rem 0 0; }
+.board-top h1 { font: 600 clamp(1.9rem, 4.6vw, 3rem)/1.15 var(--font); letter-spacing: -.02em; margin: 0 0 .75rem; }
+.board-top .lede { max-width: 40rem; font-size: 1.1rem; color: var(--ink-2); }
+.board-tools { display: flex; flex-wrap: wrap; gap: .6rem; margin: 1rem 0 1.25rem; }
+.board {
+  background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); box-shadow: var(--shadow);
+  position: relative; overflow: auto; max-height: calc(100vh - 9rem); min-height: 22rem;
+}
+.board:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+table.board-table { border-collapse: separate; border-spacing: 0; width: max-content; font-size: .88rem; line-height: 1.55; }
+.board-table th, .board-table td { width: 19rem; min-width: 19rem; max-width: 19rem; padding: .85rem 1rem; text-align: left; vertical-align: top; border-right: 1px solid var(--line); border-bottom: 1px solid var(--line); background: var(--surface); }
+.board-table thead th, .board-table thead td { position: sticky; top: 0; z-index: 2; background: var(--surface-2); border-bottom: 2px solid var(--accent-text); }
+.board-table tbody th[scope="row"], .board-table thead td.corner { position: sticky; left: 0; z-index: 1; width: 7.5rem; min-width: 7.5rem; max-width: 7.5rem; background: var(--surface-2); font-size: .8rem; font-weight: 600; color: var(--ink-2); }
+.board-table thead td.corner { z-index: 3; }
+.board-table tbody tr:last-child th, .board-table tbody tr:last-child td { border-bottom: 0; }
+.board-table th[scope="col"] { font-weight: 400; }
+.b-n { display: block; font-size: .72rem; font-weight: 600; letter-spacing: .06em; text-transform: uppercase; color: var(--accent-text); }
+.b-t { display: block; margin: .15rem 0; font-size: 1rem; font-weight: 600; line-height: 1.35; color: var(--ink); text-decoration: none; }
+.b-t:hover { color: var(--accent-text); text-decoration: underline; }
+.b-k { display: block; font-size: .78rem; color: var(--ink-2); }
+.shot { display: block; width: 100%; height: auto; border: 1px solid var(--line); border-radius: var(--radius-sm); }
+.shot-link { display: block; border-radius: var(--radius-sm); }
+.no-shot { margin: 0; color: var(--ink-2); font-size: .85rem; }
+.board-note { max-width: 72rem; margin: 1rem auto 0; font-size: .85rem; color: var(--ink-2); }
+@media (max-width: 40rem) {
+  .board { max-height: 75vh; }
+  .board-table th, .board-table td { width: 16rem; min-width: 16rem; max-width: 16rem; }
+}
+
 @media print {
   .draft, .site-bar, .actions { display: none; }
   body { background: #fff; color: #000; }
   body::before { display: none; }
   main#main { border: 0; box-shadow: none; margin: 0; width: 100%; }
+  .board-tools, .board-note { display: none; }
+  .board { max-height: none; overflow: visible; border: 0; box-shadow: none; }
+  .board-table thead th, .board-table thead td, .board-table tbody th[scope="row"] { position: static; }
+  @page { size: landscape; }
 }
 
 @media (prefers-reduced-motion: reduce) { * { transition: none !important; animation: none !important; scroll-behavior: auto !important; } }

@@ -8,6 +8,7 @@
     "build:storyboard": "node scripts/build-storyboard.mjs",
     "build:scorm": "node scripts/build-scorm.mjs",
     "build:all": "node scripts/build-storyboard.mjs && node scripts/build-scorm.mjs",
+    "capture": "node scripts/capture-screens.mjs",
     "test": "node scripts/test.mjs",
     "check:filler": "node scripts/check-filler.mjs"
   }

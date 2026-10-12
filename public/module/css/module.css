@@ -116,13 +116,14 @@ body {
 }
 .top-row { display: flex; align-items: center; justify-content: space-between; gap: .75rem; }
 .brand { font-weight: 600; font-size: .9rem; }
-.toc-btn {
+.top-btn, .toc-btn {
   font: 600 .78rem/1.4 var(--font); letter-spacing: .05em; text-transform: uppercase;
   color: var(--accent-text); background: transparent; border: 1px solid var(--accent-text); border-radius: var(--radius-sm);
   min-height: 2.25rem; padding: .3rem .8rem; cursor: pointer;
 }
-.toc-btn:hover { background: var(--accent-soft); }
-.toc-btn[aria-expanded="true"] { background: var(--accent-soft); }
+.top-btn:hover, .toc-btn:hover { background: var(--accent-soft); }
+.top-btn[aria-expanded="true"], .toc-btn[aria-expanded="true"] { background: var(--accent-soft); }
+.top-actions { display: flex; gap: .4rem; flex-wrap: wrap; justify-content: flex-end; }
 .track { display: flex; gap: 4px; margin: .5rem 0 .3rem; }
 .track .seg { flex: 1; height: 6px; border-radius: 3px; background: var(--surface-2); border: 1px solid var(--line); }
 .track .seg.done { background: var(--accent); border-color: var(--accent); }
@@ -182,9 +183,39 @@ ol.toc { list-style: none; margin: 0; padding: 0; display: grid; gap: .15rem; }
     align-self: start; margin-top: 1.75rem; max-height: calc(100vh - 13rem); overflow-y: auto;
     padding: 0; background: none; border: 0; box-shadow: none;
   }
-  .toc-btn { display: none; }
+  #tocBtn { display: none; }
   main { margin: 0; }
 }
+
+
+/* Sheets: the LMS data panel and the reset confirmation. Same bottom-sheet pattern as the narrow contents list. */
+.sheet {
+  position: fixed; left: 50%; transform: translateX(-50%); bottom: 4.6rem; z-index: 12;
+  width: min(46rem, 100%); max-height: 70vh; overflow-y: auto;
+  padding: .5rem var(--gutter) 1.1rem;
+  background: var(--surface); border: 1px solid var(--line); border-bottom: 0; border-radius: var(--radius) var(--radius) 0 0;
+  box-shadow: 0 -12px 30px rgba(20, 30, 55, .22);
+}
+.sheet[hidden] { display: none; }
+.sheet:focus { outline: none; }
+.sheet h2 { font-size: 1.15rem; margin: .75rem 0 .5rem; }
+.sheet h2:focus { outline: none; }
+.sheet-head { position: sticky; top: -.5rem; z-index: 1; display: flex; align-items: center; justify-content: space-between; gap: .75rem; padding-top: .5rem; background: var(--surface); }
+.sheet-actions { display: flex; flex-wrap: wrap; gap: .6rem; margin-top: .5rem; }
+.sheet-confirm { border-color: var(--poor); }
+
+.lms-mode { margin: 0 0 .75rem; padding: .55rem .8rem; border-radius: var(--radius-sm); font-size: .88rem; background: var(--accent-soft); border: 1px solid var(--accent-text); max-width: none; }
+.lms-mode.sim { background: var(--surface-2); border-color: var(--line); }
+ul.lms-list { list-style: none; margin: 0 0 .75rem; padding: 0; display: grid; gap: .5rem; }
+.lms-list li { padding: .55rem .8rem; border: 1px solid var(--line); border-radius: var(--radius-sm); background: var(--surface-2); }
+.lms-row { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: .1rem .75rem; }
+.lms-row strong { font-size: .95rem; }
+.lms-val { font-weight: 600; color: var(--accent-text); font-size: .95rem; }
+.lms-list code, .lms-log code { font: 500 .78rem/1.5 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; color: var(--ink-2); overflow-wrap: anywhere; }
+.lms-why { margin: .15rem 0 0; font-size: .85rem; color: var(--ink-2); max-width: none; }
+ol.lms-log { margin: 0 0 .75rem; padding: .5rem .8rem .5rem 2rem; border: 1px solid var(--line); border-radius: var(--radius-sm); background: var(--surface-2); max-height: 9rem; overflow-y: auto; }
+.lms-log li { margin: 0; }
+.lms-purpose { font-size: .9rem; max-width: none; }
 
 /* Scoring tags and boxes */
 .scoretag {
@@ -365,6 +396,12 @@ table.plain th { font-weight: 600; }
 
 :focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: 4px; }
 
+@media (max-width: 40rem) {
+  .brand { display: none; }
+  .top-row { justify-content: stretch; }
+  .top-actions { width: 100%; }
+  .top-actions .top-btn, .top-actions .toc-btn { flex: 1; padding-left: .4rem; padding-right: .4rem; }
+}
 @media (max-width: 30rem) {
   .mode { display: none; }
   .nav { justify-content: space-between; }
@@ -378,5 +415,5 @@ table.plain th { font-weight: 600; }
   body * { visibility: hidden; }
   .jobaid, .jobaid * { visibility: visible; }
   .jobaid { position: absolute; left: 0; top: 0; width: 100%; border: 0; }
-  .nav, .top, .site-bar, .outline, .noprint { display: none; }
+  .nav, .top, .site-bar, .outline, .sheet, .noprint { display: none; }
 }

@@ -9,7 +9,9 @@ Status: draft. Figures marked "filler" on the site are placeholders. See `docs/F
 | Path | What it is |
 |---|---|
 | `public/index.html` | The case page |
-| `public/storyboard/` | The storyboard (generated from `content/storyboard.json`) |
+| `public/storyboard/` | The storyboard as a document (generated from `content/storyboard.json`) |
+| `public/storyboard/board/` | The same storyboard as a horizontal board with screenshots (generated from the same file) |
+| `public/storyboard/screens/` | Screenshots of each module step, captured by `scripts/capture-screens.mjs` |
 | `public/module/` | The learning object: plain HTML, CSS, and JavaScript with a SCORM 1.2 wrapper |
 | `public/downloads/` | The SCORM package built from the module |
 | `content/storyboard.json` | Storyboard source |
@@ -25,6 +27,7 @@ Requires Node 18 or later. No dependencies.
 npm run build:all      # regenerate the storyboard page and the SCORM zip
 npm test               # content checks and SCORM wrapper tests against a mock LMS
 npm run check:filler   # list placeholders still on the site
+npm run capture        # refresh the board screenshots (needs Playwright, see below)
 ```
 
 Rebuild the zip after any change under `public/module/`, and commit it.
@@ -52,9 +55,17 @@ Embedding: the module can be framed from any site (`<iframe src="https://.../mod
 
 Case page text lives in `public/index.html`. Storyboard text lives in `content/storyboard.json`; `public/storyboard/index.html` is generated from it, so run `npm run build:all` after editing and commit both. Module content lives in `public/module/js/content.js`; rebuild the zip after editing.
 
+## Storyboard: one file, two views
+
+`content/storyboard.json` is the single source. `npm run build:storyboard` writes both the document view (`/storyboard/`) and the board view (`/storyboard/board/`), so an edit shows up in both and they cannot disagree. The board also shows a screenshot of each module step. Those are images, so they go stale when the module changes: run `npm run capture` (needs Playwright: `npm i --no-save playwright`, optionally `FONT_DIR` pointing at Poppins `.woff2` files) and then `npm run build:storyboard`. The build prints a note when the module has changed since the last capture.
+
+The board is a normal page with its own link, works in dark mode (`?theme=dark`) and prints in landscape. If a team works in Figma, FigJam or Miro, treat those as exports of this file, not a second copy to maintain.
+
 ## SCORM notes
 
 SCORM 1.2, single SCO, mastery score 80. The module reports `lesson_status` (passed or failed), `score.raw`, `lesson_location`, and `suspend_data`. Outside an LMS it runs in browser mode and keeps progress in `localStorage`.
+
+The **LMS data** button in the module header shows the four values above plus the recent `LMSSetValue` and `LMSCommit` calls. With no LMS it simulates one, so the purpose of SCORM is visible to anyone reviewing the work. The **Reset** button asks first, then clears answers, score, place and saved data. SCORM 1.2 has no "new attempt" call, so inside an LMS a reset only marks the attempt incomplete again; whether the LMS keeps an earlier score or status is the LMS's rule.
 
 ## Analytics
 
