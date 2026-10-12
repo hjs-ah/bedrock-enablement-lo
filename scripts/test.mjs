@@ -180,6 +180,15 @@ ok('each page marks only its own nav item as current', () => {
   assert.deepEqual(current(pages.storyboard), ['/storyboard/']);
 });
 
+ok('hosting keeps the trailing slash so the module\'s relative asset paths resolve', () => {
+  // The module links css/ and js/ relatively (it has to, to work inside a SCORM zip).
+  // With trailingSlash false, /module/ redirects to /module and those paths break.
+  const cfg = JSON.parse(fs.readFileSync(path.join(root, 'vercel.json'), 'utf8'));
+  assert.equal(cfg.trailingSlash, true);
+  assert.match(pages.module, /href="css\/module\.css"/);
+  assert.match(pages.module, /src="js\/app\.js"/);
+});
+
 ok('module site bar is hidden by default so the SCORM package shows no site chrome', () => {
   assert.match(pages.module, /<header class="site-bar" id="siteBar" hidden>/);
 });
