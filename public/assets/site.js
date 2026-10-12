@@ -7,6 +7,24 @@
     try { if (window.va) { window.va('event', { name: name, data: data || {} }); } } catch (e) { /* optional */ }
   }
 
+  // Theme toggle. Same storage key as the portfolio site; light is the default.
+  var themeBtn = document.getElementById('themeBtn');
+  var themeLabel = document.getElementById('themeLabel');
+  function paintTheme() {
+    var dark = document.documentElement.getAttribute('data-theme') === 'dark';
+    if (themeLabel) { themeLabel.textContent = dark ? 'Light' : 'Dark'; }
+    if (themeBtn) { themeBtn.setAttribute('aria-label', dark ? 'Switch to light theme' : 'Switch to dark theme'); }
+  }
+  if (themeBtn) {
+    paintTheme();
+    themeBtn.addEventListener('click', function () {
+      var next = document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+      document.documentElement.setAttribute('data-theme', next);
+      try { localStorage.setItem('theme', next); } catch (e) { /* storage unavailable */ }
+      paintTheme();
+    });
+  }
+
   document.addEventListener('click', function (ev) {
     var t = ev.target.closest('[data-track]');
     if (t) { track(t.getAttribute('data-track'), { where: t.getAttribute('data-where') || '' }); }

@@ -133,12 +133,62 @@ ok('wrapper runs standalone when no LMS exists', () => {
   assert.equal(p.data, '{"i":2}');
 });
 
+ok('wrapper stays standalone when the parent frame is on another origin', () => {
+  const crossOrigin = {};
+  Object.defineProperty(crossOrigin, 'API', { get() { throw new Error('SecurityError: blocked a frame from accessing a cross-origin frame'); } });
+  const store = {};
+  const ctx = sandbox({ localStorage: { getItem: (k) => store[k] ?? null, setItem: (k, v) => { store[k] = v; } } });
+  ctx.parent = crossOrigin;
+  vm.runInContext(js('scorm.js'), ctx);
+  assert.equal(ctx.Scorm.init(), false);
+  assert.equal(ctx.Scorm.isLMS(), false);
+  ctx.Scorm.saveProgress('zones', '{}');
+  assert.equal(ctx.Scorm.loadProgress().location, 'zones');
+});
+
 ok('wrapper survives a missing localStorage', () => {
   const ctx = sandbox();
   vm.runInContext(js('scorm.js'), ctx);
   ctx.Scorm.init();
   ctx.Scorm.saveProgress('a', 'b');
   assert.equal(ctx.Scorm.get('cmi.suspend_data'), '');
+});
+
+/* ---- site navigation stays identical on every page ---- */
+const pageHtml = (...parts) => fs.readFileSync(path.join(root, 'public', ...parts), 'utf8');
+const navOf = (html) => {
+  const m = html.match(/<nav class="site-nav"[\s\S]*?<\/nav>/);
+  assert.ok(m, 'page has a site-nav');
+  return m[0].replace(/ aria-current="page"/g, '');
+};
+const pages = {
+  case: pageHtml('index.html'),
+  module: pageHtml('module', 'index.html'),
+  storyboard: pageHtml('storyboard', 'index.html')
+};
+
+ok('site nav has the same items, order and links on the case page, module and storyboard', () => {
+  const ref = navOf(pages.case);
+  assert.equal(navOf(pages.module), ref);
+  assert.equal(navOf(pages.storyboard), ref);
+});
+
+ok('each page marks only its own nav item as current', () => {
+  const current = (html) => [...html.match(/<nav class="site-nav"[\s\S]*?<\/nav>/)[0].matchAll(/<a href="([^"]+)" aria-current="page"/g)].map((m) => m[1]);
+  assert.deepEqual(current(pages.case), ['/']);
+  assert.deepEqual(current(pages.module), ['/module/']);
+  assert.deepEqual(current(pages.storyboard), ['/storyboard/']);
+});
+
+ok('module site bar is hidden by default so the SCORM package shows no site chrome', () => {
+  assert.match(pages.module, /<header class="site-bar" id="siteBar" hidden>/);
+});
+
+ok('old teal palette and fonts are gone', () => {
+  for (const [name, html] of Object.entries(pages)) assert.ok(!/Bricolage|Source\+Serif/.test(html), name);
+  for (const f of [['assets', 'site.css'], ['module', 'css', 'module.css'], ['assets', 'favicon.svg']]) {
+    assert.ok(!/0C6B7A|5EC4D3|084F5B/i.test(pageHtml(...f)), f.join('/'));
+  }
 });
 
 console.log(`\n${passed} checks passed`);

@@ -378,6 +378,41 @@
     save();
   }
 
+  /* ---------- site bar (browser mode only) ---------- */
+
+  // The portfolio navigation shows only when the module is opened directly on the web.
+  // Inside an LMS or inside someone else's frame, the module stays chrome-free.
+  function setupSiteBar() {
+    var siteBar = document.getElementById('siteBar');
+    if (!siteBar) { return; }
+    var framed = false;
+    try { framed = window.self !== window.top; } catch (e) { framed = true; }
+    if (S.isLMS() || framed) { return; }
+    siteBar.hidden = false;
+
+    var btn = document.getElementById('themeBtn');
+    var label = document.getElementById('themeLabel');
+    var root = document.documentElement;
+    function paintTheme() {
+      var dark = root.getAttribute('data-theme') === 'dark';
+      if (label) { label.textContent = dark ? 'Light' : 'Dark'; }
+      if (btn) { btn.setAttribute('aria-label', dark ? 'Switch to light theme' : 'Switch to dark theme'); }
+    }
+    paintTheme();
+    if (btn) {
+      btn.addEventListener('click', function () {
+        var next = root.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+        root.setAttribute('data-theme', next);
+        try { window.localStorage.setItem('theme', next); } catch (e) { /* storage unavailable */ }
+        paintTheme();
+      });
+    }
+    siteBar.addEventListener('click', function (ev) {
+      var t = ev.target.closest('[data-track]');
+      if (t) { track(t.getAttribute('data-track'), { where: 'module' }); }
+    });
+  }
+
   /* ---------- events ---------- */
 
   stage.addEventListener('click', function (ev) {
@@ -440,6 +475,7 @@
 
   S.init();
   loadAnalytics();
+  setupSiteBar();
   restore();
   modeEl.textContent = S.isLMS() ? 'Reporting to your LMS' : 'Browser mode: progress saves on this device';
   paint(false);

@@ -12,19 +12,26 @@
   var started = 0;
   var STORE_KEY = 'bedrock-lo-v1';
 
+  // Walks up the frame chain looking for the LMS API. A parent on another origin
+  // (for example, this module embedded in a different site) throws on property access;
+  // treat that as "no LMS above here" and stop.
   function findApi(win) {
     var hops = 0;
-    while (win && !win.API && win.parent && win.parent !== win && hops < 10) {
-      win = win.parent;
-      hops += 1;
+    try {
+      while (win && !win.API && win.parent && win.parent !== win && hops < 10) {
+        win = win.parent;
+        hops += 1;
+      }
+      return win && win.API ? win.API : null;
+    } catch (e) {
+      return null;
     }
-    return win && win.API ? win.API : null;
   }
 
   function locate() {
     var found = findApi(global);
-    if (!found && global.opener) {
-      try { found = findApi(global.opener); } catch (e) { found = null; }
+    if (!found) {
+      try { if (global.opener) { found = findApi(global.opener); } } catch (e) { found = null; }
     }
     return found;
   }
