@@ -1,0 +1,183 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <!-- Remove this tag when the case is ready to be indexed. -->
+  <meta name="robots" content="noindex">
+  <title>Storyboard: Talking Bedrock with customers</title>
+  <meta name="description" content="The design record for a Bedrock sales enablement module: audience, goal, scene-by-scene plan, and measurement.">
+  <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@500;700;800&family=Source+Serif+4:ital,wght@0,400;0,600;1,400&display=swap">
+  <link rel="stylesheet" href="/assets/site.css">
+  <script>window.va = window.va || function () { (window.vaq = window.vaq || []).push(arguments); };</script>
+  <script defer src="/_vercel/insights/script.js"></script>
+  <script defer src="/assets/site.js"></script>
+</head>
+<body>
+  <a class="skip" href="#main">Skip to content</a>
+  <div class="draft" role="note">Draft in progress. Values marked <span class="filler">like this</span> are placeholders and will be replaced before this case is shared.</div>
+  <header class="wrap site-head">
+    <a class="name" href="/">Antone Holmes</a>
+    <nav aria-label="This case">
+      <a href="/">Case</a>
+      <a href="/module/" data-track="nav_module" data-where="storyboard">Module</a>
+      <a href="#measurement">Measurement</a>
+    </nav>
+  </header>
+  <main id="main" class="wrap">
+    <section style="padding:2rem 0 1.5rem" data-section="storyboard-top">
+      <h1 style="font:800 clamp(2rem,5vw,3.4rem)/1.05 var(--sans);letter-spacing:-.025em;margin:0 0 1rem">Storyboard: Talking Bedrock with customers</h1>
+      <p style="max-width:40rem;font-size:1.2rem">The storyboard is the design record behind the module: who it is for, what a learner can do afterward, what appears on each screen, and how each part is measured. It matches the build scene for scene.</p>
+      <h2 style="margin-top:2rem">Audience</h2>
+      <p style="max-width:40rem">Inside sales representatives and sales leaders who are new to generative AI and need to hold a credible first conversation about Amazon Bedrock with customers, from startup founders to C-suite executives.</p>
+      <h2>Performance goal</h2>
+      <p style="max-width:40rem">After the module, a rep can open a conversation by finding a use case, place it in one of three adoption zones, frame a model-selection discussion with seven criteria, and stay honest and useful when capacity is limited.</p>
+      <h2>Design approach</h2>
+      <ul class="plain" style="max-width:40rem">
+        <li>Action mapping: begin with the on-the-job behavior and keep only the content that supports it.</li>
+        <li>Scenario-based practice: three branching customer conversations with a strong, a partial, and a weak answer at each decision, and feedback that explains why.</li>
+        <li>Stable framework, swappable reference: product details change quickly, so the seven criteria stay put and facts live in one content file with a verify-before-quoting note.</li>
+        <li>Accessible by default: keyboard operable, visible focus, color never the only signal, works at phone width, respects reduced motion.</li>
+      </ul>
+    </section>
+
+    <section class="scene" id="welcome" data-section="scene-welcome">
+      <h2>Welcome</h2>
+      <p class="kind">Orientation, about 1 minute</p>
+      <dl class="parts">
+        <dt>Objective</dt><dd>Set expectations and show what the learner will be able to do.</dd>
+        <dt>On screen</dt><dd>Title, a one-sentence promise, four performance objectives, and a note that Bedrock facts change and should be verified before quoting to customers.</dd>
+        <dt>Interaction</dt><dd>None. Learners can resume where they left off or start over.</dd>
+        <dt>Feedback</dt><dd>None.</dd>
+        <dt>Assessment</dt><dd>None.</dd>
+        <dt>Why this way</dt><dd>Objectives are written as behaviors the learner can do on a call, not topics they will see.</dd>
+      </dl>
+    </section>
+
+    <section class="scene" id="warmup" data-section="scene-warmup">
+      <h2>The real question</h2>
+      <p class="kind">Warm-up, about 2 minutes</p>
+      <dl class="parts">
+        <dt>Objective</dt><dd>Feel the difference between pitching a product and finding a use case.</dd>
+        <dt>On screen</dt><dd>A CEO says: "Our investors keep asking about our AI plan. Where do we even start?" Three possible replies.</dd>
+        <dt>Interaction</dt><dd>Choose one reply. The choice locks and feedback appears.</dd>
+        <dt>Feedback</dt><dd>Each reply explains why it works or doesn't. The strong reply asks about a process or customer moment.</dd>
+        <dt>Assessment</dt><dd>Unscored. It sets up the rest of the module.</dd>
+        <dt>Why this way</dt><dd>The line mirrors what executives said under investor pressure. Starting with it makes the learner's first decision the central skill.</dd>
+      </dl>
+    </section>
+
+    <section class="scene" id="zones" data-section="scene-zones">
+      <h2>Three zones</h2>
+      <p class="kind">Concept and practice, about 4 minutes</p>
+      <dl class="parts">
+        <dt>Objective</dt><dd>Place a customer's use case in back office, middle office, or customer-facing, and know the first question for each.</dd>
+        <dt>On screen</dt><dd>Tabs for each zone with who it covers, examples, what to watch for, and the first question to ask. Then three customer statements to sort.</dd>
+        <dt>Interaction</dt><dd>Browse the tabs, then sort three statements into zones.</dd>
+        <dt>Feedback</dt><dd>Immediate, with a one-line reason for each statement.</dd>
+        <dt>Assessment</dt><dd>Unscored practice. Reinforced in the knowledge check.</dd>
+        <dt>Why this way</dt><dd>New sellers don't need an AI taxonomy. They need a quick way to decide what to ask next. Three zones is small enough to remember on a call.</dd>
+      </dl>
+    </section>
+
+    <section class="scene" id="planner" data-section="scene-planner">
+      <h2>Choosing a model family</h2>
+      <p class="kind">Framework and tool, about 5 minutes</p>
+      <dl class="parts">
+        <dt>Objective</dt><dd>Use seven criteria to frame a model-selection discussion without claiming to pick the model.</dd>
+        <dt>On screen</dt><dd>Seven expandable criteria, each with a plain-language meaning and a question to ask. Then a four-question planner that returns a talk track.</dd>
+        <dt>Interaction</dt><dd>Open criteria at will. Answer four questions about an imaginary customer to see a talk track.</dd>
+        <dt>Feedback</dt><dd>The planner output changes with the answers and always ends with: the model choice is a test result, not a sales claim.</dd>
+        <dt>Assessment</dt><dd>Unscored. The final line is tested in the knowledge check.</dd>
+        <dt>Why this way</dt><dd>Sellers frame the conversation and bring in a solutions architect for the comparison. The planner models that division of labor and avoids model names that would go stale.</dd>
+      </dl>
+    </section>
+
+    <section class="scene" id="scen0" data-section="scene-scen0">
+      <h2>Conversation 1: the technical founder</h2>
+      <p class="kind">Branching scenario, about 3 minutes</p>
+      <dl class="parts">
+        <dt>Objective</dt><dd>Diagnose a technical buyer's workload before pitching, and route depth questions to a specialist.</dd>
+        <dt>On screen</dt><dd>A startup CTO asks why she should move to Bedrock. Two decisions, three replies each.</dd>
+        <dt>Interaction</dt><dd>Choose a reply at each decision. The second decision depends on the conversation, not on the first choice.</dd>
+        <dt>Feedback</dt><dd>Strong, partly right, or weak, with a reason, then a short takeaway.</dd>
+        <dt>Assessment</dt><dd>Up to 4 points.</dd>
+        <dt>Why this way</dt><dd>Feature tours lose technical buyers. The scenario rewards questions about cost, speed, quality, and security reviews.</dd>
+      </dl>
+    </section>
+
+    <section class="scene" id="scen1" data-section="scene-scen1">
+      <h2>Conversation 2: the executive under investor pressure</h2>
+      <p class="kind">Branching scenario, about 3 minutes</p>
+      <dl class="parts">
+        <dt>Objective</dt><dd>Offer a small, measurable first step and an honest account of cost.</dd>
+        <dt>On screen</dt><dd>A COO owned by a private equity firm wants an AI plan without a science project. Two decisions.</dd>
+        <dt>Interaction</dt><dd>Same as conversation 1.</dd>
+        <dt>Feedback</dt><dd>Same structure. Weak answers include fear-based urgency and unsupported savings claims.</dd>
+        <dt>Assessment</dt><dd>Up to 4 points.</dd>
+        <dt>Why this way</dt><dd>This is the conversation the case is named for. The strong path defines success first, then proves it in a pilot.</dd>
+      </dl>
+    </section>
+
+    <section class="scene" id="scen2" data-section="scene-scen2">
+      <h2>Conversation 3: the capacity-constrained launch</h2>
+      <p class="kind">Branching scenario, about 3 minutes</p>
+      <dl class="parts">
+        <dt>Objective</dt><dd>Stay credible when supply is limited: no promises, gather the load facts, use the escalation path, set a check-in date.</dd>
+        <dt>On screen</dt><dd>A VP of Engineering hit throughput limits and asks for a capacity guarantee four weeks before launch. Two decisions.</dd>
+        <dt>Interaction</dt><dd>Same as conversation 1.</dd>
+        <dt>Feedback</dt><dd>Weak answers promise or predict availability. Strong answers are honest, specific, and give a next date.</dd>
+        <dt>Assessment</dt><dd>Up to 4 points.</dd>
+        <dt>Why this way</dt><dd>Capacity was a real constraint in 2024 and 2025. Treating it as a conversation skill keeps the content useful and avoids internal allocation detail.</dd>
+      </dl>
+    </section>
+
+    <section class="scene" id="quiz" data-section="scene-quiz">
+      <h2>Knowledge check</h2>
+      <p class="kind">Assessment, about 3 minutes</p>
+      <dl class="parts">
+        <dt>Objective</dt><dd>Confirm the learner can apply the core ideas.</dd>
+        <dt>On screen</dt><dd>Five multiple-choice questions on opening move, zones, selection criteria, capacity conversations, and who decides the model.</dd>
+        <dt>Interaction</dt><dd>Choose one answer per question. Answers lock with immediate feedback.</dd>
+        <dt>Feedback</dt><dd>A one-sentence explanation for every question.</dd>
+        <dt>Assessment</dt><dd>1 point each, 5 points. Together with the scenarios, 17 points. Pass mark 80%.</dd>
+        <dt>Why this way</dt><dd>Questions test decisions, not recall of product facts.</dd>
+      </dl>
+    </section>
+
+    <section class="scene" id="results" data-section="scene-results">
+      <h2>Results and job aid</h2>
+      <p class="kind">Close, about 1 minute</p>
+      <dl class="parts">
+        <dt>Objective</dt><dd>Report the outcome and leave the learner with something to use on the next call.</dd>
+        <dt>On screen</dt><dd>Score, pass or retry, a points breakdown, and a one-page job aid: three first questions, seven criteria, a capacity checklist, and the closing rule.</dd>
+        <dt>Interaction</dt><dd>Retry the conversations and quiz if under the pass mark. Print the job aid.</dd>
+        <dt>Feedback</dt><dd>Pass or not-yet message.</dd>
+        <dt>Assessment</dt><dd>Reports score and pass or fail to the LMS (SCORM 1.2) when launched from one.</dd>
+        <dt>Why this way</dt><dd>The job aid is the part reps will actually reuse. It prints cleanly on one page.</dd>
+      </dl>
+    </section>
+    <section class="scene" id="measurement" data-section="measurement">
+      <h2>Measurement plan</h2>
+      <p class="kind">The four Kirkpatrick levels, with the evidence behind each.</p>
+      <div class="table-scroll">
+        <table class="data">
+          <thead><tr><th scope="col">Level</th><th scope="col">Question</th><th scope="col">Measure</th><th scope="col">Evidence</th></tr></thead>
+          <tbody>
+          <tr><th scope="row">Level 1: reaction</th><td>Did reps find it useful and credible?</td><td>Three-question pulse after the module</td><td><span class="filler">pulse not yet run</span></td></tr>
+          <tr><th scope="row">Level 2: learning</th><td>Can reps make good decisions in the conversations?</td><td>Scenario points and knowledge check score (SCORM score)</td><td><span class="filler">average 86%</span></td></tr>
+          <tr><th scope="row">Level 3: behavior</th><td>Are reps creating Bedrock opportunities?</td><td>New Bedrock opportunities per rep per month</td><td>Reported: 1 to 2 per rep per month across about 50 reps, up from 0</td></tr>
+          <tr><th scope="row">Level 4: results</th><td>Did Bedrock pipeline move?</td><td>Lift in Bedrock pipeline</td><td>Reported: 3% <span class="todo">confirm what it is a percentage of</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+  </main>
+  <footer class="wrap site-foot">
+    <p><a href="/">Back to the case</a>. Source on <a href="https://github.com/hjs-ah/bedrock-enablement-lo">GitHub</a>.</p>
+  </footer>
+</body>
+</html>

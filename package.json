@@ -1,0 +1,14 @@
+{
+  "name": "bedrock-enablement-lo",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Talking Bedrock with customers: an enablement case study, playable module, storyboard, and SCORM 1.2 package.",
+  "type": "module",
+  "scripts": {
+    "build:storyboard": "node scripts/build-storyboard.mjs",
+    "build:scorm": "node scripts/build-scorm.mjs",
+    "build:all": "node scripts/build-storyboard.mjs && node scripts/build-scorm.mjs",
+    "test": "node scripts/test.mjs",
+    "check:filler": "node scripts/check-filler.mjs"
+  }
+}

@@ -1,0 +1,119 @@
+{
+  "title": "Storyboard: Talking Bedrock with customers",
+  "intro": "The storyboard is the design record behind the module: who it is for, what a learner can do afterward, what appears on each screen, and how each part is measured. It matches the build scene for scene.",
+  "audience": "Inside sales representatives and sales leaders who are new to generative AI and need to hold a credible first conversation about Amazon Bedrock with customers, from startup founders to C-suite executives.",
+  "goal": "After the module, a rep can open a conversation by finding a use case, place it in one of three adoption zones, frame a model-selection discussion with seven criteria, and stay honest and useful when capacity is limited.",
+  "approach": [
+    "Action mapping: begin with the on-the-job behavior and keep only the content that supports it.",
+    "Scenario-based practice: three branching customer conversations with a strong, a partial, and a weak answer at each decision, and feedback that explains why.",
+    "Stable framework, swappable reference: product details change quickly, so the seven criteria stay put and facts live in one content file with a verify-before-quoting note.",
+    "Accessible by default: keyboard operable, visible focus, color never the only signal, works at phone width, respects reduced motion."
+  ],
+  "scenes": [
+    {
+      "id": "welcome",
+      "title": "Welcome",
+      "kind": "Orientation, about 1 minute",
+      "objective": "Set expectations and show what the learner will be able to do.",
+      "onScreen": "Title, a one-sentence promise, four performance objectives, and a note that Bedrock facts change and should be verified before quoting to customers.",
+      "interaction": "None. Learners can resume where they left off or start over.",
+      "feedback": "None.",
+      "assessment": "None.",
+      "rationale": "Objectives are written as behaviors the learner can do on a call, not topics they will see."
+    },
+    {
+      "id": "warmup",
+      "title": "The real question",
+      "kind": "Warm-up, about 2 minutes",
+      "objective": "Feel the difference between pitching a product and finding a use case.",
+      "onScreen": "A CEO says: \"Our investors keep asking about our AI plan. Where do we even start?\" Three possible replies.",
+      "interaction": "Choose one reply. The choice locks and feedback appears.",
+      "feedback": "Each reply explains why it works or doesn't. The strong reply asks about a process or customer moment.",
+      "assessment": "Unscored. It sets up the rest of the module.",
+      "rationale": "The line mirrors what executives said under investor pressure. Starting with it makes the learner's first decision the central skill."
+    },
+    {
+      "id": "zones",
+      "title": "Three zones",
+      "kind": "Concept and practice, about 4 minutes",
+      "objective": "Place a customer's use case in back office, middle office, or customer-facing, and know the first question for each.",
+      "onScreen": "Tabs for each zone with who it covers, examples, what to watch for, and the first question to ask. Then three customer statements to sort.",
+      "interaction": "Browse the tabs, then sort three statements into zones.",
+      "feedback": "Immediate, with a one-line reason for each statement.",
+      "assessment": "Unscored practice. Reinforced in the knowledge check.",
+      "rationale": "New sellers don't need an AI taxonomy. They need a quick way to decide what to ask next. Three zones is small enough to remember on a call."
+    },
+    {
+      "id": "planner",
+      "title": "Choosing a model family",
+      "kind": "Framework and tool, about 5 minutes",
+      "objective": "Use seven criteria to frame a model-selection discussion without claiming to pick the model.",
+      "onScreen": "Seven expandable criteria, each with a plain-language meaning and a question to ask. Then a four-question planner that returns a talk track.",
+      "interaction": "Open criteria at will. Answer four questions about an imaginary customer to see a talk track.",
+      "feedback": "The planner output changes with the answers and always ends with: the model choice is a test result, not a sales claim.",
+      "assessment": "Unscored. The final line is tested in the knowledge check.",
+      "rationale": "Sellers frame the conversation and bring in a solutions architect for the comparison. The planner models that division of labor and avoids model names that would go stale."
+    },
+    {
+      "id": "scen0",
+      "title": "Conversation 1: the technical founder",
+      "kind": "Branching scenario, about 3 minutes",
+      "objective": "Diagnose a technical buyer's workload before pitching, and route depth questions to a specialist.",
+      "onScreen": "A startup CTO asks why she should move to Bedrock. Two decisions, three replies each.",
+      "interaction": "Choose a reply at each decision. The second decision depends on the conversation, not on the first choice.",
+      "feedback": "Strong, partly right, or weak, with a reason, then a short takeaway.",
+      "assessment": "Up to 4 points.",
+      "rationale": "Feature tours lose technical buyers. The scenario rewards questions about cost, speed, quality, and security reviews."
+    },
+    {
+      "id": "scen1",
+      "title": "Conversation 2: the executive under investor pressure",
+      "kind": "Branching scenario, about 3 minutes",
+      "objective": "Offer a small, measurable first step and an honest account of cost.",
+      "onScreen": "A COO owned by a private equity firm wants an AI plan without a science project. Two decisions.",
+      "interaction": "Same as conversation 1.",
+      "feedback": "Same structure. Weak answers include fear-based urgency and unsupported savings claims.",
+      "assessment": "Up to 4 points.",
+      "rationale": "This is the conversation the case is named for. The strong path defines success first, then proves it in a pilot."
+    },
+    {
+      "id": "scen2",
+      "title": "Conversation 3: the capacity-constrained launch",
+      "kind": "Branching scenario, about 3 minutes",
+      "objective": "Stay credible when supply is limited: no promises, gather the load facts, use the escalation path, set a check-in date.",
+      "onScreen": "A VP of Engineering hit throughput limits and asks for a capacity guarantee four weeks before launch. Two decisions.",
+      "interaction": "Same as conversation 1.",
+      "feedback": "Weak answers promise or predict availability. Strong answers are honest, specific, and give a next date.",
+      "assessment": "Up to 4 points.",
+      "rationale": "Capacity was a real constraint in 2024 and 2025. Treating it as a conversation skill keeps the content useful and avoids internal allocation detail."
+    },
+    {
+      "id": "quiz",
+      "title": "Knowledge check",
+      "kind": "Assessment, about 3 minutes",
+      "objective": "Confirm the learner can apply the core ideas.",
+      "onScreen": "Five multiple-choice questions on opening move, zones, selection criteria, capacity conversations, and who decides the model.",
+      "interaction": "Choose one answer per question. Answers lock with immediate feedback.",
+      "feedback": "A one-sentence explanation for every question.",
+      "assessment": "1 point each, 5 points. Together with the scenarios, 17 points. Pass mark 80%.",
+      "rationale": "Questions test decisions, not recall of product facts."
+    },
+    {
+      "id": "results",
+      "title": "Results and job aid",
+      "kind": "Close, about 1 minute",
+      "objective": "Report the outcome and leave the learner with something to use on the next call.",
+      "onScreen": "Score, pass or retry, a points breakdown, and a one-page job aid: three first questions, seven criteria, a capacity checklist, and the closing rule.",
+      "interaction": "Retry the conversations and quiz if under the pass mark. Print the job aid.",
+      "feedback": "Pass or not-yet message.",
+      "assessment": "Reports score and pass or fail to the LMS (SCORM 1.2) when launched from one.",
+      "rationale": "The job aid is the part reps will actually reuse. It prints cleanly on one page."
+    }
+  ],
+  "measurement": [
+    { "level": "Level 1: reaction", "question": "Did reps find it useful and credible?", "measure": "Three-question pulse after the module", "source": "<span class=\"filler\">pulse not yet run</span>" },
+    { "level": "Level 2: learning", "question": "Can reps make good decisions in the conversations?", "measure": "Scenario points and knowledge check score (SCORM score)", "source": "<span class=\"filler\">average 86%</span>" },
+    { "level": "Level 3: behavior", "question": "Are reps creating Bedrock opportunities?", "measure": "New Bedrock opportunities per rep per month", "source": "Reported: 1 to 2 per rep per month across about 50 reps, up from 0" },
+    { "level": "Level 4: results", "question": "Did Bedrock pipeline move?", "measure": "Lift in Bedrock pipeline", "source": "Reported: 3% <span class=\"todo\">confirm what it is a percentage of</span>" }
+  ]
+}
